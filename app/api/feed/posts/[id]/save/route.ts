@@ -1,4 +1,4 @@
-import { connectDB } from '@/lib/db';
+import connectDB from '@/lib/db';
 import { getUserFromRequest } from '@/lib/auth';
 import User from '@/models/User';
 import Post from '@/models/Post';

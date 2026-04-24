@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuthStore } from '@/lib/authstore';
+import { useAuthStore } from '@/lib/authStore';
 import Link from 'next/link';
 import Image from 'next/image';
 
