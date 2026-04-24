@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth';
 import connectDB from '@/lib/mongodb';
 import Post from '@/models/Post';
+import { Types } from 'mongoose';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
@@ -15,22 +16,23 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const postId = params.id;
-    const post = await Post.findById(postId);
+    const { id } = await context.params;
+    const post = await Post.findById(id);
 
     if (!post) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
 
-    // Check if already liked
-    const alreadyLiked = post.likes.some(id => id.toString() === user._id.toString());
+    const alreadyLiked = post.likes.some((id: Types.ObjectId) =>
+      id.toString() === user._id.toString()
+    );
 
     if (alreadyLiked) {
-      // Unlike
-      post.likes = post.likes.filter(id => id.toString() !== user._id.toString());
+      post.likes = post.likes.filter((id: Types.ObjectId) =>
+        id.toString() !== user._id.toString()
+      );
     } else {
-      // Like
-      post.likes.push(user._id as any);
+      post.likes.push(user._id as Types.ObjectId);
     }
 
     await post.save();

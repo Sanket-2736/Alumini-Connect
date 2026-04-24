@@ -6,13 +6,15 @@ import User from '@/models/User';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
+
 ) {
   try {
     await connectDB();
     const user = await getUserFromRequest(request);
 
-    const jobId = params.id;
+    const { id } = await context.params;
+const jobId = id;
 
     // Get job and increment view count
     const job = await Job.findByIdAndUpdate(
@@ -69,7 +71,8 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
+
 ) {
   try {
     await connectDB();
@@ -79,7 +82,8 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const jobId = params.id;
+    const { id } = await context.params;
+const jobId = id;
     const job = await Job.findById(jobId);
 
     if (!job) {
@@ -128,7 +132,8 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
+
 ) {
   try {
     await connectDB();
@@ -138,7 +143,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const jobId = params.id;
+    const { id } = await context.params;
+const jobId = id;
     const job = await Job.findById(jobId);
 
     if (!job) {

@@ -63,7 +63,7 @@ export default function ProfilePage() {
         }
 
         // Load connection status (if not viewing own profile)
-        if (currentUser && currentUser.id !== userId) {
+        if (currentUser && currentUser._id !== userId) {
           const connectionResponse = await fetch(`/api/connections/status/${userId}`);
           if (connectionResponse.ok) {
             const connectionData: ConnectionStatus = await connectionResponse.json();
@@ -104,7 +104,7 @@ export default function ProfilePage() {
   };
 
   const getConnectionButton = () => {
-    if (!currentUser || currentUser.id === userId) {
+    if (!currentUser || currentUser._id === userId) {
       return (
         <Link
           href="/dashboard/profile"
@@ -184,7 +184,7 @@ export default function ProfilePage() {
     );
   }
 
-  const isOwnProfile = currentUser?.id === userId;
+  const isOwnProfile = currentUser?._id === userId;
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">

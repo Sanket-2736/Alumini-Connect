@@ -6,7 +6,8 @@ import User from '@/models/User';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
+
 ) {
   try {
     await connectDB();
@@ -22,7 +23,8 @@ export async function PUT(
       return NextResponse.json({ error: 'Only admins/moderators can pin posts' }, { status: 403 });
     }
 
-    const postId = params.id;
+    const { id } = await context.params;
+const postId = id;
     const post = await Post.findById(postId);
 
     if (!post) {

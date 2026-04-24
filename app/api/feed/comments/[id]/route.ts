@@ -6,7 +6,8 @@ import User from '@/models/User';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
+
 ) {
   try {
     await connectDB();
@@ -16,7 +17,8 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const commentId = params.id;
+    const { id } = await context.params;
+const commentId = id;
     const { content } = await request.json();
 
     const comment = await Comment.findById(commentId);
@@ -45,7 +47,8 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
+
 ) {
   try {
     await connectDB();
@@ -55,7 +58,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const commentId = params.id;
+    const { id } = await context.params;
+const commentId = id;
     const comment = await Comment.findById(commentId);
 
     if (!comment) {

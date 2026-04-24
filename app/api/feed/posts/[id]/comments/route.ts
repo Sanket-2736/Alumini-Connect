@@ -6,7 +6,8 @@ import Comment from '@/models/Comment';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
+
 ) {
   try {
     await connectDB();
@@ -16,7 +17,8 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const postId = params.id;
+    const { id } = await context.params;
+const postId = id;
     const { content, replyToId } = await request.json();
 
     if (!content || content.trim().length === 0) {

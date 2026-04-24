@@ -60,7 +60,7 @@ export default function MessagesPage() {
       updateConversation(convId, {
         lastMessage: { _id: message._id, content: message.content, sender: message.sender, createdAt: message.createdAt, attachments: message.attachments } as any,
         lastActivity: message.createdAt,
-        unreadCount: message.sender._id !== user.id
+        unreadCount: message.sender._id !== user._id
           ? (conversations.find((c) => c._id === convId)?.unreadCount || 0) + 1
           : undefined,
       } as any);
@@ -69,7 +69,7 @@ export default function MessagesPage() {
     socket.on('message:seen', (data: { conversationId: string; seenBy: string; upToMessageId: string }) => {
       const msgs = messages.get(data.conversationId) || [];
       msgs.forEach((msg) => {
-        if (msg.sender._id === user.id && msg._id <= data.upToMessageId && msg.status !== 'seen') {
+        if (msg.sender._id === user._id && msg._id <= data.upToMessageId && msg.status !== 'seen') {
           updateMessage(msg._id, data.conversationId, { status: 'seen' });
         }
       });
@@ -93,7 +93,7 @@ export default function MessagesPage() {
     });
 
     socket.on('group:member_removed', (data: { conversationId: string; removedUserId: string }) => {
-      if (data.removedUserId === user.id) {
+      if (data.removedUserId === user._id) {
         // We were removed — remove from list
         setConversations(conversations.filter((c) => c._id !== data.conversationId));
         if (activeConversationId === data.conversationId) {
@@ -114,7 +114,7 @@ export default function MessagesPage() {
     socketRef.current = socket;
     return () => { socket.disconnect(); socketRef.current = null; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id, accessToken]);
+  }, [user?._id, accessToken]);
 
   // ─── Load Conversations ─────────────────────────────────────────────────────
 
@@ -132,7 +132,7 @@ export default function MessagesPage() {
     if (!user) return;
     setLoadingConversations(true);
     loadConversations().finally(() => setLoadingConversations(false));
-  }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [user?._id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ─── Load Messages ──────────────────────────────────────────────────────────
 
@@ -293,7 +293,7 @@ export default function MessagesPage() {
             <ChatWindow
               conversation={activeConversation}
               messages={activeMessages}
-              currentUserId={user.id}
+              currentUserId={user._id}
               isOnline={activeConversation.type === 'dm' ? onlineUsers.has(activeConversation.otherParticipant?._id || '') : false}
               typingUserIds={activeTypingUsers}
               hasMore={activeHasMore}

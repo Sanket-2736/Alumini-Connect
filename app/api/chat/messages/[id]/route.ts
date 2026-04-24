@@ -5,7 +5,8 @@ import Message from '@/models/Message';
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
+
 ) {
   try {
     await connectDB();
@@ -15,7 +16,10 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const messageId = params.id;
+    const { id } = await context.params;   // ✅ fix
+
+  const messageId = id;
+
 
     // Find and verify ownership
     const message = await Message.findById(messageId);

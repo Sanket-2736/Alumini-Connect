@@ -5,7 +5,8 @@ import Job from '@/models/Job';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
+
 ) {
   try {
     await connectDB();
@@ -15,7 +16,8 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const jobId = params.id;
+    const { id } = await context.params;
+const jobId = id;
     const job = await Job.findById(jobId).populate('applicants', 'fullName profilePicture email university department batch');
 
     if (!job) {

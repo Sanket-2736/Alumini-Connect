@@ -1,9 +1,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import axios from 'axios';
+import axios, {
+  AxiosError,
+  InternalAxiosRequestConfig,
+} from 'axios';
+
+/* ================= TYPES ================= */
 
 interface User {
-  id: string;
+  _id: string;
   fullName: string;
   email: string;
   role: string;
@@ -20,24 +25,32 @@ interface AuthState {
   refreshToken: () => Promise<void>;
 }
 
-// Configure axios interceptor for automatic token refresh
+interface RefreshResponse {
+  data: {
+    accessToken: string;
+    user: User;
+  };
+}
+
+/* ================= TOKEN QUEUE ================= */
+
 let isRefreshing = false;
+
 let failedQueue: Array<{
-  resolve: (value?: any) => void;
-  reject: (error: any) => void;
+  resolve: () => void;
+  reject: (error: unknown) => void;
 }> = [];
 
-const processQueue = (error: any, token: string | null = null) => {
+const processQueue = (error: unknown) => {
   failedQueue.forEach(({ resolve, reject }) => {
-    if (error) {
-      reject(error);
-    } else {
-      resolve(token!);
-    }
+    if (error) reject(error);
+    else resolve();
   });
 
   failedQueue = [];
 };
+
+/* ================= STORE ================= */
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -48,7 +61,6 @@ export const useAuthStore = create<AuthState>()(
 
       setAuth: (user, accessToken) => {
         set({ user, accessToken });
-        // Set axios default header
         axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
       },
 
@@ -62,22 +74,25 @@ export const useAuthStore = create<AuthState>()(
         if (!accessToken) return;
 
         if (isRefreshing) {
-          return new Promise((resolve, reject) => {
-            failedQueue.push({ resolve, reject });
-          });
+            return new Promise<void>((resolve, reject) => {
+                failedQueue.push({ resolve, reject });
+            });
         }
 
         isRefreshing = true;
 
         try {
-          const response = await axios.post('/api/auth/refresh');
+          const response = await axios.post<RefreshResponse>(
+            '/api/auth/refresh'
+          );
+
           const { accessToken: newAccessToken, user } = response.data.data;
 
           get().setAuth(user, newAccessToken);
-          processQueue(null, newAccessToken);
+          processQueue(null);
         } catch (error) {
           get().clearAuth();
-          processQueue(error, null);
+          processQueue(error);
           throw error;
         } finally {
           isRefreshing = false;
@@ -94,11 +109,13 @@ export const useAuthStore = create<AuthState>()(
   )
 );
 
-// Axios interceptor to handle 401 responses
+/* ================= AXIOS INTERCEPTOR ================= */
+
 axios.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+  async (error: AxiosError) => {
+    const originalRequest =
+      error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
@@ -112,7 +129,6 @@ axios.interceptors.response.use(
           return axios(originalRequest);
         }
       } catch (refreshError) {
-        // Refresh failed, redirect to login
         useAuthStore.getState().clearAuth();
         window.location.href = '/login';
         return Promise.reject(refreshError);
@@ -123,10 +139,12 @@ axios.interceptors.response.use(
   }
 );
 
-// Initialize auth state on app load
+/* ================= INIT ================= */
+
 if (typeof window !== 'undefined') {
-  // Try to refresh token on app load
-  useAuthStore.getState().refreshToken().catch(() => {
-    // Ignore errors during initialization
-  });
+  const { accessToken } = useAuthStore.getState();
+
+  if (accessToken) {
+    useAuthStore.getState().refreshToken().catch(() => {});
+  }
 }

@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth';
 import connectDB from '@/lib/mongodb';
 import Job from '@/models/Job';
+import { Types } from 'mongoose';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
@@ -15,31 +16,43 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const jobId = params.id;
-    const job = await Job.findById(jobId);
+    const { id } = await context.params;
 
+    const job = await Job.findById(id);
     if (!job) {
       return NextResponse.json({ error: 'Job not found' }, { status: 404 });
     }
 
-    // Check if already applied
-    if (job.applicants.some(id => id.toString() === user._id.toString())) {
-      return NextResponse.json({ error: 'You have already applied' }, { status: 400 });
+    const userId = user._id.toString();
+
+    // ✅ FIX: typed + safe comparison
+    const alreadyApplied = job.applicants.some(
+      (applicantId: Types.ObjectId) =>
+        applicantId.toString() === userId
+    );
+
+    if (alreadyApplied) {
+      return NextResponse.json(
+        { error: 'You have already applied' },
+        { status: 400 }
+      );
     }
 
-    // Add user to applicants
-    job.applicants.push(user._id as any);
-    await job.save();
+    // ✅ FIX: no "any"
+    job.applicants.push(user._id as Types.ObjectId);
 
-    // TODO: Create notification for job poster
+    await job.save();
 
     return NextResponse.json({
       message: 'Applied successfully',
-      applicantCount: job.applicants.length
+      applicantCount: job.applicants.length,
     });
 
   } catch (error) {
     console.error('Error applying to job:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

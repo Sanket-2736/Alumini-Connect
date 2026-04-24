@@ -4,16 +4,18 @@ import connectDB from '@/lib/mongodb';
 import Post from '@/models/Post';
 import Comment from '@/models/Comment';
 import User from '@/models/User';
-
+import { Types } from 'mongoose';
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
+
 ) {
   try {
     await connectDB();
     const user = await getUserFromRequest(request);
 
-    const postId = params.id;
+    const { id } = await context.params;
+const postId = id;
 
     // Get post with author details
     const post = await Post.findById(postId)
@@ -72,7 +74,11 @@ export async function GET(
       comments: post.commentCount,
       shareCount: post.shareCount,
       isPinned: post.isPinned,
-      isLiked: user ? post.likes.some(id => id.toString() === user._id.toString()) : false,
+      isLiked: user
+  ? post.likes.some((id: Types.ObjectId) =>
+      id.toString() === user._id.toString()
+    )
+  : false,
       isSaved: user ? (post.author as any).savedPosts?.includes(user._id) : false,
       createdAt: post.createdAt,
       updatedAt: post.updatedAt,
@@ -101,7 +107,8 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
+
 ) {
   try {
     await connectDB();
@@ -111,7 +118,8 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const postId = params.id;
+    const { id } = await context.params;
+const postId = id;
     const post = await Post.findById(postId);
 
     if (!post) {
@@ -153,7 +161,8 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
+
 ) {
   try {
     await connectDB();
@@ -163,7 +172,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const postId = params.id;
+    const { id } = await context.params;
+const postId = id;
     const post = await Post.findById(postId);
 
     if (!post) {

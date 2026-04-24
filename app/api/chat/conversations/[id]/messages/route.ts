@@ -61,7 +61,8 @@ export async function GET(
 }
   export async function POST(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
+
   ) {
     try {
       await connectDB();
@@ -71,7 +72,10 @@ export async function GET(
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
 
-      const conversationId = params.id;
+      const { id } = await context.params;   // ✅ correct
+
+  const conversationId = id;
+;
       const { content, attachments, replyToId } = await request.json();
 
       // Verify user is participant in conversation
