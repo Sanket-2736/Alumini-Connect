@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { useAuthStore } from '@/lib/authStore';
 import { VerificationStatus } from '@/lib/enums';
+import ProfileImageUpload from '@/components/profile/ProfileImageUpload';
 
 interface UserProfile {
   id: string;
@@ -102,9 +103,32 @@ export default function ProfilePage() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const response = await axios.put('/api/user/me', editForm);
+      // Clean up empty fields before sending
+      const dataToSend = { ...editForm };
+
+      // Only include workDetails if at least one field is filled
+      if (
+        dataToSend.workDetails &&
+        !dataToSend.workDetails.company &&
+        !dataToSend.workDetails.jobTitle &&
+        dataToSend.workDetails.experienceYears === 0
+      ) {
+        dataToSend.workDetails = undefined;
+      }
+
+      // Only include socialLinks if at least one field is filled
+      if (
+        dataToSend.socialLinks &&
+        !dataToSend.socialLinks.linkedin &&
+        !dataToSend.socialLinks.github &&
+        !dataToSend.socialLinks.twitter
+      ) {
+        dataToSend.socialLinks = undefined;
+      }
+
+      const response = await axios.put('/api/user/me', dataToSend);
       if (response.data.success) {
-        setProfile(prev => prev ? { ...prev, ...editForm } : null);
+        setProfile(prev => prev ? { ...prev, ...dataToSend } : null);
         setIsEditing(false);
       }
     } catch (error: any) {
@@ -192,31 +216,35 @@ export default function ProfilePage() {
           {/* Avatar Section */}
           <div className="md:col-span-1">
             <div className="text-center">
-              <div className="relative">
-                <img
-                  src={profile.profilePicture || '/default-avatar.svg'}
-                  alt="Profile"
-                  className="w-32 h-32 rounded-full mx-auto object-cover"
+              {isEditing ? (
+                <ProfileImageUpload
+                  currentImage={profile.profilePicture}
+                  onUploadSuccess={(imageUrl) => {
+                    setProfile(prev => prev ? { ...prev, profilePicture: imageUrl } : null);
+                  }}
+                  onUploadError={(error) => {
+                    console.error('Avatar upload error:', error);
+                  }}
                 />
-                {isEditing && (
-                  <label className="absolute bottom-0 right-0 bg-indigo-600 text-white p-2 rounded-full cursor-pointer hover:bg-indigo-700">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleAvatarUpload}
-                      className="hidden"
-                    />
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                  </label>
-                )}
-              </div>
-              <div className="mt-4">
+              ) : (
+                <div>
+                  <img
+                    src={profile.profilePicture || '/default-avatar.svg'}
+                    alt="Profile"
+                    className="w-32 h-32 rounded-full mx-auto object-cover border-4 border-indigo-100"
+                  />
+                </div>
+              )}
+
+              <div className="mt-6">
                 <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getVerificationBadgeColor(profile.verificationStatus)}`}>
                   {profile.verificationStatus}
                 </span>
               </div>
+
+              {isEditing && (
+                <p className="text-xs text-gray-500 mt-4">Click the + button to upload a new profile picture</p>
+              )}
             </div>
           </div>
 

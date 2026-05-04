@@ -37,8 +37,13 @@ export function generateRefreshToken(payload: JWTPayload): string {
  */
 export function verifyAccessToken(token: string): JWTPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as JWTPayload;
-  } catch {
+    console.log('  [JWT] Verifying access token...');
+    console.log('  [JWT] JWT_SECRET exists:', !!process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET) as JWTPayload;
+    console.log('  [JWT] ✅ Token verified:', { userId: decoded.userId, email: decoded.email, role: decoded.role });
+    return decoded;
+  } catch (error: any) {
+    console.error('  [JWT] ❌ Token verification failed:', error.message);
     return null;
   }
 }

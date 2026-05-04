@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         email: user.email,
         role: user.role,
         profilePicture: user.profilePicture,
-        isEmailVerified: user.isEmailVerified,
+        verificationStatus: user.verificationStatus,
       },
     });
   } catch (error) {

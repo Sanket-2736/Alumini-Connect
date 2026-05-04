@@ -1,5 +1,12 @@
 import { z } from 'zod';
+import mongoose from 'mongoose';
 import { UserRole } from '@/lib/enums';
+
+// ObjectId validation helper
+const objectIdSchema = z.string().refine(
+  (val) => mongoose.Types.ObjectId.isValid(val),
+  { message: 'Invalid university ID format' }
+);
 
 /**
  * Registration validation schema
@@ -10,7 +17,7 @@ export const registerSchema = z.object({
   password: z.string()
     .min(8, 'Password must be at least 8 characters')
     .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain at least one lowercase letter, one uppercase letter, and one number'),
-  university: z.string().min(1, 'University is required'), // This will be ObjectId later
+  university: objectIdSchema,
   department: z.string().min(1, 'Department is required'),
   batch: z.string().min(1, 'Batch is required'),
   role: z.enum([UserRole.STUDENT, UserRole.ALUMNI]),
@@ -48,15 +55,15 @@ export const updateProfileSchema = z.object({
   fullName: z.string().min(2).max(100).optional(),
   bio: z.string().max(500).optional(),
   workDetails: z.object({
-    company: z.string().min(1),
-    jobTitle: z.string().min(1),
-    experienceYears: z.number().min(0),
+    company: z.string().optional().refine(val => !val || val.length > 0, { message: 'Company must not be empty' }),
+    jobTitle: z.string().optional().refine(val => !val || val.length > 0, { message: 'Job title must not be empty' }),
+    experienceYears: z.number().min(0).optional(),
   }).optional(),
   skills: z.array(z.string()).optional(),
   socialLinks: z.object({
-    linkedin: z.string().url().optional(),
-    github: z.string().url().optional(),
-    twitter: z.string().url().optional(),
+    linkedin: z.union([z.string().url(), z.literal('')]).optional(),
+    github: z.union([z.string().url(), z.literal('')]).optional(),
+    twitter: z.union([z.string().url(), z.literal('')]).optional(),
   }).optional(),
   batch: z.string().min(1).optional(),
   department: z.string().min(1).optional(),

@@ -51,19 +51,18 @@ const universitySchema = new Schema<IUniversity>(
 );
 
 // Indexes
-universitySchema.index({ slug: 1 }, { unique: true });
 universitySchema.index({ isActive: 1 });
 universitySchema.index({ name: 1 });
 
-// Pre-save middleware to generate slug
-universitySchema.pre('save', function(next: any) {
-  if (this.isModified('name') && !this.slug) {
+// Pre-save middleware to generate slug if not provided
+universitySchema.pre('save', function(this: IUniversity) {
+  // Only generate slug if it's not already set
+  if (!this.slug && this.isModified('name')) {
     this.slug = this.name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '');
   }
-  next();
 });
 
 const University = mongoose.models.University || mongoose.model<IUniversity>('University', universitySchema);

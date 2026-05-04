@@ -55,13 +55,17 @@ export default function ConnectionsPage() {
       const params = status ? `?status=${status}` : '';
       const response = await fetch(`/api/connections/my${params}`);
       if (response.ok) {
-        const data: ConnectionsResponse = await response.json();
-        setConnections(data.connections);
+        const data = await response.json();
+        
+        // Handle both wrapped (with success) and unwrapped responses
+        const connections = data.data?.connections || data.connections || [];
+        
+        setConnections(connections);
 
         // Count pending received requests
         if (!status) {
-          const pendingReceived = data.connections.filter(
-            conn => conn.status === 'pending' && !conn.isRequester
+          const pendingReceived = connections.filter(
+            (conn: Connection) => conn.status === 'pending' && !conn.isRequester
           ).length;
           setPendingCount(pendingReceived);
         }

@@ -1,22 +1,23 @@
+import { NextRequest } from 'next/server';
 import connectToDatabase from '@/lib/db';
 import University from '@/models/University';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 
 /**
  * GET /api/universities
- * Public route - return all active universities for signup dropdown
+ * Fetch all active universities
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await connectToDatabase();
 
     const universities = await University.find({ isActive: true })
-      .select('name slug logoUrl')
+      .select('_id name location')
       .sort({ name: 1 });
 
-    return successResponse(universities);
+    return successResponse(universities, 'Universities fetched successfully');
   } catch (error) {
-    console.error('Get universities error:', error);
-    return errorResponse('Internal server error', 500);
+    console.error('Error fetching universities:', error);
+    return errorResponse('Failed to fetch universities', 500);
   }
 }

@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "ts-node server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js"
-  },
+      "dev": "nodemon server.ts",
+      "build": "tsc",
+      "start": "npm run build && node dist/server.js"
+    },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",

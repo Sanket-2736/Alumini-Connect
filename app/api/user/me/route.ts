@@ -38,7 +38,6 @@ export async function GET(request: NextRequest) {
       skills: user.skills,
       socialLinks: user.socialLinks,
       verificationStatus: user.verificationStatus,
-      isEmailVerified: user.isEmailVerified,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
@@ -87,7 +86,10 @@ export async function PUT(request: NextRequest) {
     console.error('Update profile error:', error);
 
     if (error instanceof z.ZodError) {
-      return errorResponse('Validation failed', 400, error.issues);
+      const firstError = error.issues[0];
+      const fieldPath = firstError.path.join('.');
+      const message = firstError.message;
+      return errorResponse(`Validation error in ${fieldPath}: ${message}`, 400);
     }
 
     return errorResponse('Internal server error', 500);

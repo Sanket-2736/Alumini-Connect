@@ -26,9 +26,15 @@ export async function POST(request: NextRequest) {
       return errorResponse('Invalid email or password', 401);
     }
 
-    // Check if email is verified
-    if (!user.isEmailVerified) {
-      return errorResponse('Please verify your email before logging in', 401);
+    // Check if user is verified by admin
+    if (user.verificationStatus !== 'approved') {
+      if (user.verificationStatus === 'pending') {
+        return errorResponse('Your account is pending admin verification. Please wait.', 401);
+      } else if (user.verificationStatus === 'rejected') {
+        return errorResponse(`Your account was rejected. Reason: ${user.rejectionReason || 'No reason provided'}`, 403);
+      } else {
+        return errorResponse('Please upload your verification documents to complete registration', 401);
+      }
     }
 
     // Check if user is banned
@@ -66,7 +72,7 @@ export async function POST(request: NextRequest) {
         email: user.email,
         role: user.role,
         profilePicture: user.profilePicture,
-        isEmailVerified: user.isEmailVerified,
+        verificationStatus: user.verificationStatus,
       },
     });
 

@@ -1,8 +1,8 @@
 import { NextRequest } from 'next/server';
+import mongoose from 'mongoose';
 import connectToDatabase from '@/lib/db';
 import User from '@/models/User';
 import Connection from '@/models/Connection';
-import { getUserFromRequest } from '@/lib/auth';
 import { ConnectionStatus } from '@/models/Connection';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 import { createNotification } from '@/lib/services/notificationService';
@@ -14,8 +14,9 @@ import { NotificationType } from '@/models/Notification';
  */
 export async function POST(request: NextRequest) {
   try {
-    const user = await getUserFromRequest(request);
-    if (!user) {
+    // Get user ID from middleware headers
+    const userId = request.headers.get('x-user-id');
+    if (!userId) {
       return errorResponse('Unauthorized', 401);
     }
 
@@ -25,11 +26,21 @@ export async function POST(request: NextRequest) {
       return errorResponse('Recipient ID is required', 400);
     }
 
-    if (recipientId === user._id.toString()) {
+    if (recipientId === userId) {
       return errorResponse('Cannot send connection request to yourself', 400);
     }
 
+    if (!mongoose.Types.ObjectId.isValid(recipientId)) {
+      return errorResponse('Invalid recipient ID', 400);
+    }
+
     await connectToDatabase();
+
+    // Get requester user
+    const user = await User.findById(userId).select('_id fullName profilePicture');
+    if (!user) {
+      return errorResponse('User not found', 401);
+    }
 
     // Check if recipient exists and is not banned
     const recipient = await User.findOne({ _id: recipientId, isBanned: false });
@@ -40,8 +51,8 @@ export async function POST(request: NextRequest) {
     // Check if connection already exists
     const existingConnection = await Connection.findOne({
       $or: [
-        { requester: user._id, recipient: recipientId },
-        { requester: recipientId, recipient: user._id },
+        { requester: userId, recipient: recipientId },
+        { requester: recipientId, recipient: userId },
       ],
     });
 
@@ -53,14 +64,14 @@ export async function POST(request: NextRequest) {
         return errorResponse('Connection request already exists', 400);
       }
       if (existingConnection.status === ConnectionStatus.REJECTED &&
-          existingConnection.recipient.toString() === user._id.toString()) {
+          existingConnection.recipient.toString() === userId) {
         return errorResponse('Cannot send request to user who rejected you', 400);
       }
     }
 
     // Create new connection request
     const connection = new Connection({
-      requester: user._id,
+      requester: userId,
       recipient: recipientId,
       status: ConnectionStatus.PENDING,
     });
@@ -71,7 +82,7 @@ export async function POST(request: NextRequest) {
     await createNotification({
       recipientId,
       type: NotificationType.CONNECTION_REQUEST,
-      actorId: user._id.toString(),
+      actorId: userId,
       title: 'New connection request',
       body: `${user.fullName} sent you a connection request`,
       link: '/dashboard/connections',

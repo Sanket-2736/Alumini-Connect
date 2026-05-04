@@ -11,8 +11,8 @@ const dev = process.env.NODE_ENV !== 'production';
 const hostname = process.env.HOSTNAME || 'localhost';
 const port = parseInt(process.env.PORT || '4000', 10);
 
-const MONGODB_URI = process.env.MONGODB_URI!;
-const JWT_SECRET = process.env.JWT_SECRET!;
+const MONGODB_URI = 'mongodb+srv://memecraft473_db_user:twhXmkMVW6AYKnIv@cluster0.uv0wwzx.mongodb.net/alumni-app';
+const JWT_SECRET = 'my-jwt-secret-is-easy';
 
 // ─── Mongoose Models ──────────────────────────────────────────────────────────
 

@@ -280,7 +280,7 @@ export default function MessageInput({
             placeholder="Type a message…"
             disabled={disabled}
             rows={1}
-            className="w-full pl-4 pr-10 py-2.5 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none disabled:opacity-50 disabled:cursor-not-allowed text-sm leading-relaxed"
+            className="w-full pl-4 pr-10 py-2.5 border border-gray-300 rounded-2xl text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none disabled:opacity-50 disabled:cursor-not-allowed text-sm leading-relaxed"
             style={{ minHeight: '40px', maxHeight: '96px' }}
           />
 
