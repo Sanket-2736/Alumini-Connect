@@ -41,19 +41,22 @@ export default function ProfileImageUpload({
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) return;
+
     const validationError = validateFile(file);
     if (validationError) {
       setError(validationError);
       setPreviewImage(null);
       onUploadError?.(validationError);
       return;
-    }
+    }
+
     const reader = new FileReader();
     reader.onload = () => {
       setPreviewImage(reader.result as string);
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(file);
+
     await uploadImage(file);
   };
 
@@ -120,7 +123,17 @@ export default function ProfileImageUpload({
         >
           <input
             type="file"
-            accept="image}
+            accept="image/*"
+            disabled={disabled || isUploading}
+            onChange={handleFileChange}
+            className="hidden"
+          />
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+        </label>
+      </div>
+
       {isUploading && uploadProgress > 0 && (
         <div className="w-full bg-gray-200 rounded-full h-2">
           <div

@@ -18,7 +18,8 @@ export default function CreatePostBox({ onPostCreated }: CreatePostBoxProps) {
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
   const [posting, setPosting] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   if (user?.role !== UserRole.ALUMNI) {
     return (
       <div className="bg-white rounded-lg shadow-sm p-4">
@@ -93,7 +94,8 @@ export default function CreatePostBox({ onPostCreated }: CreatePostBoxProps) {
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-4">
-      {!isExpanded ? (
+      {!isExpanded ? (
+
         <div className="flex items-center gap-3">
           <img
             src={user?.profilePicture || '/default-avatar.png'}
@@ -107,7 +109,8 @@ export default function CreatePostBox({ onPostCreated }: CreatePostBoxProps) {
             Share something with alumni…
           </button>
         </div>
-      ) : (
+      ) : (
+
         <div className="space-y-4">
           {}
           <div className="flex items-center justify-between pb-4 border-b">
@@ -206,7 +209,9 @@ export default function CreatePostBox({ onPostCreated }: CreatePostBoxProps) {
             ref={fileInputRef}
             type="file"
             multiple
-            accept="image}
+            accept="image/*"
+            hidden
+          />
           <div className="space-y-2">
             <div className="flex gap-2">
               <input

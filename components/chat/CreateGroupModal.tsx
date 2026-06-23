@@ -123,7 +123,8 @@ export default function CreateGroupModal({ onClose, onGroupCreated }: CreateGrou
                 </svg>
               )}
             </div>
-            <input ref={fileInputRef} type="file" accept="image}
+            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
+          </div>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
