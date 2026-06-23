@@ -7,6 +7,13 @@ export interface IUniversity extends Document {
   logoUrl?: string;
   website?: string;
   location: string;
+  state?: string;
+  yearEstablished?: number;
+  description?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  totalStudents?: number;
+  totalAlumni?: number;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -40,6 +47,35 @@ const universitySchema = new Schema<IUniversity>(
       required: true,
       trim: true,
     },
+    state: {
+      type: String,
+      trim: true,
+    },
+    yearEstablished: {
+      type: Number,
+      min: 1800,
+      max: new Date().getFullYear(),
+    },
+    description: {
+      type: String,
+      maxlength: 1000,
+    },
+    contactEmail: {
+      type: String,
+      trim: true,
+    },
+    contactPhone: {
+      type: String,
+      trim: true,
+    },
+    totalStudents: {
+      type: Number,
+      min: 0,
+    },
+    totalAlumni: {
+      type: Number,
+      min: 0,
+    },
     isActive: {
       type: Boolean,
       default: true,
@@ -53,6 +89,7 @@ const universitySchema = new Schema<IUniversity>(
 // Indexes
 universitySchema.index({ isActive: 1 });
 universitySchema.index({ name: 1 });
+universitySchema.index({ state: 1 });
 
 // Pre-save middleware to generate slug if not provided
 universitySchema.pre('save', function(this: IUniversity) {

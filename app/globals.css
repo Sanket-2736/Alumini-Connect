@@ -24,3 +24,29 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* ── Global form element fixes ─────────────────────────────────────────────
+   Tailwind v4 no longer ships a preflight that resets input colours, so
+   inputs can inherit a near-white foreground from dark-mode OS settings
+   while keeping a white background, making typed text invisible.
+   Force sensible defaults here so every page benefits automatically.
+──────────────────────────────────────────────────────────────────────────── */
+input,
+textarea,
+select {
+  color: #111827;           /* gray-900 — always dark text */
+  background-color: #ffffff;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #9ca3af;           /* gray-400 */
+}
+
+/* Keep autofill readable */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #111827;
+  box-shadow: 0 0 0 1000px #ffffff inset;
+}

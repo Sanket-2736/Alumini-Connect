@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useAuthStore } from '@/lib/authStore';
 import Link from 'next/link';
 import Image from 'next/image';
+import { toast } from 'sonner';
 
 interface PostCardProps {
   post: any;
@@ -35,7 +36,7 @@ export default function PostCard({ post, onUpdate }: PostCardProps) {
   const handleShare = () => {
     const url = `${process.env.NEXT_PUBLIC_APP_URL}/feed/${post._id}`;
     navigator.clipboard.writeText(url);
-    alert('Post link copied to clipboard!');
+    toast.success('Post link copied to clipboard!');
   };
 
   const handleSave = async () => {

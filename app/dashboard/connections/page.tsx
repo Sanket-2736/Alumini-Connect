@@ -307,7 +307,7 @@ export default function ConnectionsPage() {
                         )}
                       </div>
                       <p className="text-sm text-gray-600">
-                        {connection.user.university.name} • {connection.user.batch} • {connection.user.department}
+                        {connection.user.university?.name || 'University not set'} • {connection.user.batch} • {connection.user.department}
                       </p>
                       {connection.user.workDetails && (
                         <p className="text-sm text-gray-600">

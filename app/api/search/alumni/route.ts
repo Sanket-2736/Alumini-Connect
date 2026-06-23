@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import connectToDatabase from '@/lib/db';
 import User from '@/models/User';
+import University from '@/models/University';
 import Connection from '@/models/Connection';
 import { getUserFromRequest } from '@/lib/auth';
 import { VerificationStatus } from '@/lib/enums';

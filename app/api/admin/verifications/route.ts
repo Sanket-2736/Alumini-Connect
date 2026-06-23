@@ -17,10 +17,9 @@ export async function GET(request: NextRequest) {
   try {
     await connectToDatabase();
 
-    // Get all users with pending or submitted verification status
-    const users = await User.find({
-      verificationStatus: { $in: ['pending', 'not_submitted'] },
-    })
+    // Get all users (including approved, rejected, pending, and not_submitted)
+    // This allows admin to view documents for any user
+    const users = await User.find({})
       .select('_id fullName email university department batch role verificationDocs verificationStatus createdAt')
       .sort({ createdAt: -1 })
       .lean();

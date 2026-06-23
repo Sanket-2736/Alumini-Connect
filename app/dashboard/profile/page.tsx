@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useAuthStore } from '@/lib/authStore';
 import { VerificationStatus } from '@/lib/enums';
 import ProfileImageUpload from '@/components/profile/ProfileImageUpload';
+import { toast } from 'sonner';
 
 interface UserProfile {
   id: string;
@@ -36,7 +37,7 @@ interface UserProfile {
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, accessToken, clearAuth } = useAuthStore();
+  const { accessToken, clearAuth } = useAuthStore();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -104,7 +105,7 @@ export default function ProfilePage() {
     setIsSaving(true);
     try {
       // Clean up empty fields before sending
-      const dataToSend = { ...editForm };
+      const dataToSend: any = { ...editForm };
 
       // Only include workDetails if at least one field is filled
       if (
@@ -113,7 +114,7 @@ export default function ProfilePage() {
         !dataToSend.workDetails.jobTitle &&
         dataToSend.workDetails.experienceYears === 0
       ) {
-        dataToSend.workDetails = undefined;
+        delete dataToSend.workDetails;
       }
 
       // Only include socialLinks if at least one field is filled
@@ -123,40 +124,19 @@ export default function ProfilePage() {
         !dataToSend.socialLinks.github &&
         !dataToSend.socialLinks.twitter
       ) {
-        dataToSend.socialLinks = undefined;
+        delete dataToSend.socialLinks;
       }
 
       const response = await axios.put('/api/user/me', dataToSend);
       if (response.data.success) {
         setProfile(prev => prev ? { ...prev, ...dataToSend } : null);
         setIsEditing(false);
+        toast.success('Profile updated successfully');
       }
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to update profile');
+      toast.error(error.response?.data?.message || 'Failed to update profile');
     } finally {
       setIsSaving(false);
-    }
-  };
-
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append('avatar', file);
-
-    try {
-      const response = await axios.post('/api/user/me/avatar', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      if (response.data.success) {
-        setProfile(prev => prev ? { ...prev, profilePicture: response.data.data.profilePicture } : null);
-      }
-    } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to upload avatar');
     }
   };
 
@@ -383,7 +363,7 @@ export default function ProfilePage() {
                   <input
                     type="text"
                     placeholder="Add a skill"
-                    onKeyPress={(e) => {
+                    onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
                         handleSkillAdd((e.target as HTMLInputElement).value);

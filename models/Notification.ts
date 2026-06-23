@@ -7,6 +7,7 @@ export enum NotificationType {
   JOB_POSTED = 'job_posted',
   POST_LIKED = 'post_liked',
   POST_COMMENTED = 'post_commented',
+  POST_CREATED = 'post_created',
   VERIFICATION_APPROVED = 'verification_approved',
   VERIFICATION_REJECTED = 'verification_rejected',
   GROUP_ADDED = 'group_added',

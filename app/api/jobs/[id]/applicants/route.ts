@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth';
 import connectDB from '@/lib/mongodb';
 import Job from '@/models/Job';
+import University from '@/models/University';
 
 export async function GET(
   request: NextRequest,

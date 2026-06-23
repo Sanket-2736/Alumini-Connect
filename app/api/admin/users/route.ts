@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import connectToDatabase from '@/lib/db';
 import User from '@/models/User';
+import University from '@/models/University';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 import { requireAdmin } from '@/lib/admin';
 

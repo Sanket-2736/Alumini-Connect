@@ -2,13 +2,22 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { toast } from 'sonner';
 
 interface University {
   _id: string;
   name: string;
   slug: string;
   location: string;
+  state?: string;
   website?: string;
+  yearEstablished?: number;
+  description?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  totalStudents?: number;
+  totalAlumni?: number;
+  logoUrl?: string;
   isActive: boolean;
   createdAt: string;
 }
@@ -21,8 +30,17 @@ export default function UniversitiesPage() {
   const [formData, setFormData] = useState({
     name: '',
     location: '',
+    state: '',
     website: '',
+    yearEstablished: new Date().getFullYear(),
+    description: '',
+    contactEmail: '',
+    contactPhone: '',
+    totalStudents: 0,
+    totalAlumni: 0,
   });
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -54,20 +72,48 @@ export default function UniversitiesPage() {
 
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await axios.post('/api/admin/universities', formData, {
+
+      const data = new FormData();
+      data.append('name', formData.name);
+      data.append('location', formData.location);
+      if (formData.state) data.append('state', formData.state);
+      if (formData.website) data.append('website', formData.website);
+      data.append('yearEstablished', String(formData.yearEstablished));
+      if (formData.description) data.append('description', formData.description);
+      if (formData.contactEmail) data.append('contactEmail', formData.contactEmail);
+      if (formData.contactPhone) data.append('contactPhone', formData.contactPhone);
+      data.append('totalStudents', String(formData.totalStudents));
+      data.append('totalAlumni', String(formData.totalAlumni));
+      if (logoFile) data.append('logo', logoFile);
+
+      const response = await axios.post('/api/admin/universities', data, {
         headers: {
           Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
         },
       });
 
       if (response.data.success) {
         setUniversities([...universities, response.data.data]);
-        setFormData({ name: '', location: '', website: '' });
+        setFormData({
+          name: '',
+          location: '',
+          state: '',
+          website: '',
+          yearEstablished: new Date().getFullYear(),
+          description: '',
+          contactEmail: '',
+          contactPhone: '',
+          totalStudents: 0,
+          totalAlumni: 0,
+        });
+        setLogoFile(null);
+        setLogoPreview(null);
         setShowForm(false);
-        alert('University added successfully!');
+        toast.success('University added successfully!');
       }
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to add university');
+      toast.error(err.response?.data?.message || 'Failed to add university');
     } finally {
       setIsSubmitting(false);
     }
@@ -92,9 +138,10 @@ export default function UniversitiesPage() {
             uni._id === id ? { ...uni, isActive: !isActive } : uni
           )
         );
+        toast.success(`University ${isActive ? 'deactivated' : 'activated'}`);
       }
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to update university');
+      toast.error(err.response?.data?.message || 'Failed to update university');
     }
   };
 
@@ -116,10 +163,10 @@ export default function UniversitiesPage() {
 
       if (response.data.success) {
         setUniversities(universities.filter((uni) => uni._id !== id));
-        alert('University deleted successfully');
+        toast.success('University deleted successfully');
       }
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to delete university');
+      toast.error(err.response?.data?.message || 'Failed to delete university');
     }
   };
 
@@ -149,44 +196,183 @@ export default function UniversitiesPage() {
         <div className="mb-8 bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold mb-4">Add New University</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                University Name *
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="e.g., MIT"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  University Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="e.g., MIT"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Location *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="e.g., Cambridge, MA"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  State
+                </label>
+                <input
+                  type="text"
+                  value={formData.state}
+                  onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="e.g., Massachusetts"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Year Established
+                </label>
+                <input
+                  type="number"
+                  value={formData.yearEstablished}
+                  onChange={(e) => setFormData({ ...formData, yearEstablished: parseInt(e.target.value) })}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="e.g., 1861"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Website
+                </label>
+                <input
+                  type="url"
+                  value={formData.website}
+                  onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="https://example.com"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Contact Email
+                </label>
+                <input
+                  type="email"
+                  value={formData.contactEmail}
+                  onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="admin@university.edu"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Contact Phone
+                </label>
+                <input
+                  type="tel"
+                  value={formData.contactPhone}
+                  onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="+1-234-567-8900"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Total Students
+                </label>
+                <input
+                  type="number"
+                  value={formData.totalStudents}
+                  onChange={(e) => setFormData({ ...formData, totalStudents: parseInt(e.target.value) || 0 })}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="e.g., 1000"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Total Alumni
+                </label>
+                <input
+                  type="number"
+                  value={formData.totalAlumni}
+                  onChange={(e) => setFormData({ ...formData, totalAlumni: parseInt(e.target.value) || 0 })}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="e.g., 5000"
+                />
+              </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Location *
+                University Logo
               </label>
-              <input
-                type="text"
-                required
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="e.g., Cambridge, MA"
-              />
+              <div className="mt-1 flex items-center gap-4">
+                {logoPreview ? (
+                  <img
+                    src={logoPreview}
+                    alt="Logo preview"
+                    className="w-16 h-16 object-contain rounded border border-gray-200 bg-gray-50"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded border-2 border-dashed border-gray-300 flex items-center justify-center bg-gray-50 text-gray-400 text-xs text-center">
+                    No logo
+                  </div>
+                )}
+                <div className="flex-1">
+                  <input
+                    type="file"
+                    id="logo"
+                    accept="image/jpeg,image/png,image/webp,image/svg+xml"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] || null;
+                      setLogoFile(file);
+                      if (file) {
+                        setLogoPreview(URL.createObjectURL(file));
+                      } else {
+                        setLogoPreview(null);
+                      }
+                    }}
+                    className="block w-full text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                  />
+                  <p className="mt-1 text-xs text-gray-500">JPG, PNG, WebP or SVG · max 2MB</p>
+                </div>
+                {logoPreview && (
+                  <button
+                    type="button"
+                    onClick={() => { setLogoFile(null); setLogoPreview(null); }}
+                    className="text-red-500 hover:text-red-700 text-sm"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Website (Optional)
+                Description
               </label>
-              <input
-                type="url"
-                value={formData.website}
-                onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="https://example.com"
+                placeholder="Brief description about the university..."
+                rows={4}
               />
             </div>
 
@@ -202,77 +388,123 @@ export default function UniversitiesPage() {
       )}
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Name
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Location
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Website
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+        {universities.length === 0 ? (
+          <div className="text-center py-12 text-gray-600">
+            No universities found. Add one to get started!
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
             {universities.map((uni) => (
-              <tr key={uni._id}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {uni.name}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {uni.location}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {uni.website ? (
-                    <a href={uni.website} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-900">
-                      Visit
-                    </a>
+              <div
+                key={uni._id}
+                className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+              >
+                {/* Card Header */}
+                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-4 text-white flex items-center gap-3">
+                  {uni.logoUrl ? (
+                    <img
+                      src={uni.logoUrl}
+                      alt={`${uni.name} logo`}
+                      className="w-10 h-10 object-contain rounded bg-white p-1 flex-shrink-0"
+                    />
                   ) : (
-                    '-'
+                    <div className="w-10 h-10 rounded bg-white bg-opacity-20 flex items-center justify-center flex-shrink-0 text-white font-bold text-lg">
+                      {uni.name.charAt(0)}
+                    </div>
                   )}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span
-                    className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      uni.isActive
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}
-                  >
-                    {uni.isActive ? 'Active' : 'Inactive'}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <div className="min-w-0">
+                    <h3 className="text-lg font-semibold truncate">{uni.name}</h3>
+                    <p className="text-blue-100 text-sm">Founded: {uni.yearEstablished || 'N/A'}</p>
+                  </div>
+                </div>
+
+                {/* Card Content */}
+                <div className="px-6 py-4">
+                  <div className="space-y-3 mb-4">
+                    {/* Location */}
+                    <div>
+                      <p className="text-xs text-gray-600 mb-1">Location:</p>
+                      <p className="text-sm font-medium text-gray-900">
+                        {uni.location}
+                        {uni.state && `, ${uni.state}`}
+                      </p>
+                    </div>
+
+                    {/* Stats */}
+                    {(uni.totalStudents || uni.totalAlumni) && (
+                      <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-200">
+                        {(uni.totalStudents ?? 0) > 0 && (
+                          <div>
+                            <p className="text-xs text-gray-600">Students</p>
+                            <p className="text-sm font-semibold text-gray-900">{(uni.totalStudents ?? 0).toLocaleString()}</p>
+                          </div>
+                        )}
+                        {(uni.totalAlumni ?? 0) > 0 && (
+                          <div>
+                            <p className="text-xs text-gray-600">Alumni</p>
+                            <p className="text-sm font-semibold text-gray-900">{(uni.totalAlumni ?? 0).toLocaleString()}</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Description */}
+                    {uni.description && (
+                      <div className="pt-2 border-t border-gray-200">
+                        <p className="text-xs text-gray-600 line-clamp-2">{uni.description}</p>
+                      </div>
+                    )}
+
+                    {/* Status */}
+                    <div className="pt-2 border-t border-gray-200">
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          uni.isActive
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}
+                      >
+                        {uni.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Quick Links */}
+                  {uni.website && (
+                    <div className="mb-4 pb-4 border-t border-gray-200 pt-4">
+                      <a
+                        href={uni.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-indigo-600 hover:text-indigo-900 text-sm font-medium"
+                      >
+                        Visit Website →
+                      </a>
+                    </div>
+                  )}
+                </div>
+
+                {/* Card Footer - Actions */}
+                <div className="px-6 py-4 border-t border-gray-200 flex gap-2">
                   <button
                     onClick={() => handleToggleActive(uni._id, uni.isActive)}
-                    className="text-indigo-600 hover:text-indigo-900 mr-4"
+                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${
+                      uni.isActive
+                        ? 'bg-yellow-50 text-yellow-700 border border-yellow-200 hover:bg-yellow-100'
+                        : 'bg-green-50 text-green-700 border border-green-200 hover:bg-green-100'
+                    }`}
                   >
                     {uni.isActive ? 'Deactivate' : 'Activate'}
                   </button>
                   <button
                     onClick={() => handleDeleteUniversity(uni._id)}
-                    className="text-red-600 hover:text-red-900"
+                    className="flex-1 px-3 py-2 bg-red-50 text-red-700 rounded-lg text-sm font-medium border border-red-200 hover:bg-red-100 transition"
                   >
                     Delete
                   </button>
-                </td>
-              </tr>
+                </div>
+              </div>
             ))}
-          </tbody>
-        </table>
-
-        {universities.length === 0 && (
-          <div className="text-center py-12 text-gray-600">
-            No universities found. Add one to get started!
           </div>
         )}
       </div>

@@ -107,7 +107,7 @@ export default function MessageBubble({
   if (message.isDeleted) {
     return (
       <div
-        className={`flex items-end mb-1 ${isOwn ? 'justify-end' : 'justify-start'}`}
+        className={`flex items-end mb-1 ${isOwn ? 'justify-start' : 'justify-end'}`}
         data-message-id={message._id}
       >
         {!isOwn && (
@@ -155,13 +155,13 @@ export default function MessageBubble({
       )}
 
       <div
-        className={`flex items-end mb-0.5 group ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}
+        className={`flex items-end mb-0.5 group ${isOwn ? 'flex-row' : 'flex-row-reverse'}`}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => { setHovered(false); setShowDeleteConfirm(false); }}
         data-message-id={message._id}
       >
         {/* Avatar (other user only) */}
-        <div className={`w-8 flex-shrink-0 ${isOwn ? 'ml-2' : 'mr-2'}`}>
+        <div className={`w-8 flex-shrink-0 ${isOwn ? 'mr-2' : 'ml-2'}`}>
           {!isOwn && showAvatar && (
             <img
               src={message.sender.profilePicture || '/default-avatar.svg'}
@@ -191,16 +191,7 @@ export default function MessageBubble({
           <div
             className={`relative px-3 py-2 shadow-sm ${
               isOwn
-                ? `bg-indigo-600 text-white ${
-                    isFirstInGroup && isLastInGroup
-                      ? 'rounded-2xl rounded-br-md'
-                      : isFirstInGroup
-                      ? 'rounded-2xl rounded-br-sm'
-                      : isLastInGroup
-                      ? 'rounded-2xl rounded-tr-sm rounded-br-md'
-                      : 'rounded-2xl rounded-r-sm'
-                  }`
-                : `bg-white text-gray-900 border border-gray-200 ${
+                ? `bg-white text-gray-900 border border-gray-200 ${
                     isFirstInGroup && isLastInGroup
                       ? 'rounded-2xl rounded-bl-md'
                       : isFirstInGroup
@@ -208,6 +199,15 @@ export default function MessageBubble({
                       : isLastInGroup
                       ? 'rounded-2xl rounded-tl-sm rounded-bl-md'
                       : 'rounded-2xl rounded-l-sm'
+                  }`
+                : `bg-indigo-600 text-white ${
+                    isFirstInGroup && isLastInGroup
+                      ? 'rounded-2xl rounded-br-md'
+                      : isFirstInGroup
+                      ? 'rounded-2xl rounded-br-sm'
+                      : isLastInGroup
+                      ? 'rounded-2xl rounded-tr-sm rounded-br-md'
+                      : 'rounded-2xl rounded-r-sm'
                   }`
             }`}
           >
@@ -232,7 +232,7 @@ export default function MessageBubble({
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`flex items-center space-x-2 p-2 rounded-lg mb-2 last:mb-0 ${
-                  isOwn ? 'bg-indigo-700 hover:bg-indigo-800' : 'bg-gray-100 hover:bg-gray-200'
+                  isOwn ? 'bg-gray-100 hover:bg-gray-200' : 'bg-indigo-700 hover:bg-indigo-800'
                 } transition-colors`}
               >
                 <svg className="w-8 h-8 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -268,14 +268,14 @@ export default function MessageBubble({
                 hovered ? 'opacity-100' : 'opacity-0'
               }`}
             >
-              <span className={`text-xs ${isOwn ? 'text-indigo-200' : 'text-gray-400'}`}>
+              <span className={`text-xs ${isOwn ? 'text-gray-400' : 'text-indigo-200'}`}>
                 {formatTime(message.createdAt)}
               </span>
               {isOwn && (
                 <span className="text-xs">
-                  {message.status === 'sent' && <span className="text-indigo-300">✓</span>}
-                  {message.status === 'delivered' && <span className="text-indigo-300">✓✓</span>}
-                  {message.status === 'seen' && <span className="text-blue-300">✓✓</span>}
+                  {message.status === 'sent' && <span className="text-gray-400">✓</span>}
+                  {message.status === 'delivered' && <span className="text-gray-400">✓✓</span>}
+                  {message.status === 'seen' && <span className="text-gray-500">✓✓</span>}
                 </span>
               )}
             </div>

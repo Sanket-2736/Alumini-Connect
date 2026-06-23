@@ -53,10 +53,10 @@ export default function NewMessageModal({ onClose, onConversationCreated }: NewM
     debounceRef.current = setTimeout(async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/search/alumni?q=${encodeURIComponent(value)}&limit=10`);
+        const res = await fetch(`/api/connections/search?q=${encodeURIComponent(value)}&limit=10`);
         if (res.ok) {
           const data = await res.json();
-          setResults(data.alumni || data.users || []);
+          setResults(data.data || []);
         }
       } catch {
         setError('Search failed. Please try again.');
@@ -127,7 +127,7 @@ export default function NewMessageModal({ onClose, onConversationCreated }: NewM
               type="text"
               value={query}
               onChange={(e) => handleSearch(e.target.value)}
-              placeholder="Search connected alumni…"
+              placeholder="Search connected users…"
               className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             />
             {loading && (
@@ -152,11 +152,11 @@ export default function NewMessageModal({ onClose, onConversationCreated }: NewM
         <div className="max-h-72 overflow-y-auto">
           {results.length === 0 && query && !loading ? (
             <div className="px-5 py-8 text-center text-gray-500 text-sm">
-              No connected alumni found for &ldquo;{query}&rdquo;
+              No connected users found for &ldquo;{query}&rdquo;
             </div>
           ) : results.length === 0 && !query ? (
             <div className="px-5 py-8 text-center text-gray-400 text-sm">
-              Search for a connected alumni to start a conversation
+              Search for a connected user to start a conversation
             </div>
           ) : (
             results.map((user) => (

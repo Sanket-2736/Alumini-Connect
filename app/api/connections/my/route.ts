@@ -1,7 +1,6 @@
 import { NextRequest } from 'next/server';
 import connectToDatabase from '@/lib/db';
 import Connection from '@/models/Connection';
-import User from '@/models/User';
 import { getUserFromRequest } from '@/lib/auth';
 import { ConnectionStatus } from '@/models/Connection';
 import { successResponse, errorResponse } from '@/lib/apiResponse';

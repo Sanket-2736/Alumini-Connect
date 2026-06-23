@@ -58,12 +58,12 @@ export default function AdminLayout({
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="w-64 bg-gray-900 text-white">
+      <div className="w-64 bg-gray-900 text-white flex flex-col">
         <div className="p-6">
           <h1 className="text-2xl font-bold">Admin Panel</h1>
         </div>
 
-        <nav className="mt-6 space-y-2 px-4">
+        <nav className="mt-6 space-y-2 px-4 flex-1">
           <Link
             href="/admin/dashboard"
             className="block px-4 py-2 rounded-lg hover:bg-gray-800 transition"
@@ -96,7 +96,7 @@ export default function AdminLayout({
           </Link>
         </nav>
 
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
+        <div className="p-4 border-t border-gray-800">
           <button
             onClick={handleLogout}
             className="w-full px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition text-sm font-medium"

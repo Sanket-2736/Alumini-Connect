@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 const EXPERIENCE_LEVELS = ['entry', 'mid', 'senior', 'any'];
 const JOB_TYPES = ['full_time', 'part_time', 'internship', 'contract', 'freelance'];
@@ -74,14 +75,14 @@ export default function JobPostingPage() {
       });
 
       if (response.ok) {
-        alert('Job posted successfully!');
+        toast.success('Job posted successfully!');
         router.push('/dashboard/jobs/my-posts');
       } else {
-        alert('Failed to post job');
+        toast.error('Failed to post job');
       }
     } catch (error) {
       console.error('Error posting job:', error);
-      alert('Error posting job');
+      toast.error('Error posting job');
     } finally {
       setLoading(false);
     }

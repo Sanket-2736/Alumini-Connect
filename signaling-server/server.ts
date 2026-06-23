@@ -1,370 +1,199 @@
-import { createServer } from 'http';
 import express from 'express';
+import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
-import jwt from 'jsonwebtoken';
-import mongoose from 'mongoose';
+import cors from 'cors';
 import dotenv from 'dotenv';
 
-dotenv.config({ path: '../.env.local' });
+dotenv.config();
 
-const dev = process.env.NODE_ENV !== 'production';
-const hostname = process.env.HOSTNAME || 'localhost';
-const port = parseInt(process.env.PORT || '4000', 10);
-
-const MONGODB_URI = 'mongodb+srv://memecraft473_db_user:twhXmkMVW6AYKnIv@cluster0.uv0wwzx.mongodb.net/alumni-app';
-const JWT_SECRET = 'my-jwt-secret-is-easy';
-
-// ─── Mongoose Models ──────────────────────────────────────────────────────────
-
-const userSchema = new mongoose.Schema(
-  { fullName: String, profilePicture: String, isBanned: { type: Boolean, default: false }, lastSeen: Date },
-  { timestamps: true }
-);
-const User = mongoose.models.User || mongoose.model('User', userSchema);
-
-const attachmentSchema = new mongoose.Schema({
-  url: String, type: { type: String, enum: ['image', 'document'] }, fileName: String, fileSize: Number,
+const app = express();
+const httpServer = createServer(app);
+const io = new SocketIOServer(httpServer, {
+  cors: {
+    origin: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+    methods: ['GET', 'POST'],
+    credentials: true,
+  },
 });
-const reactionSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, emoji: String,
+
+app.use(cors());
+app.use(express.json());
+
+// Store active rooms and their participants
+interface RoomParticipant {
+  socketId: string;
+  userId: string;
+  displayName: string;
+  role: 'initiator' | 'participant';
+  joinedAt: number;
+}
+
+interface Room {
+  participants: Map<string, RoomParticipant>;
+  createdAt: number;
+  sessionId: string;
+}
+
+const rooms = new Map<string, Room>();
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
-const messageSchema = new mongoose.Schema(
-  {
-    conversationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Conversation', required: true },
-    sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    content: String,
-    attachments: [attachmentSchema],
-    status: { type: String, enum: ['sent', 'delivered', 'seen'], default: 'sent' },
-    reactions: [reactionSchema],
-    replyTo: { type: mongoose.Schema.Types.ObjectId, ref: 'Message' },
-    isDeleted: { type: Boolean, default: false },
-    deletedAt: Date,
-    isSystemMessage: { type: Boolean, default: false },
-  },
-  { timestamps: true }
-);
-const Message = mongoose.models.Message || mongoose.model('Message', messageSchema);
 
-const conversationSchema = new mongoose.Schema(
-  {
-    participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    type: { type: String, enum: ['dm', 'group'], default: 'dm' },
-    lastMessage: { type: mongoose.Schema.Types.ObjectId, ref: 'Message' },
-    lastActivity: { type: Date, default: Date.now },
-    unreadCounts: { type: Map, of: Number, default: new Map() },
-    name: String,
-    admins: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    isArchived: { type: Boolean, default: false },
-  },
-  { timestamps: true }
-);
-const Conversation = mongoose.models.Conversation || mongoose.model('Conversation', conversationSchema);
-
-const notificationSchema = new mongoose.Schema(
-  {
-    recipient: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    type: { type: String, required: true },
-    title: String, body: String, link: String,
-    isRead: { type: Boolean, default: false },
-    actor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    entityId: mongoose.Schema.Types.ObjectId,
-    entityModel: String,
-  },
-  { timestamps: true }
-);
-const Notification = mongoose.models.Notification || mongoose.model('Notification', notificationSchema);
-
-// ─── DB Connection ────────────────────────────────────────────────────────────
-
-async function connectDB() {
-  if (mongoose.connection.readyState >= 1) return;
-  await mongoose.connect(MONGODB_URI, { bufferCommands: false });
-  console.log('✅ MongoDB connected');
-}
-
-// ─── Socket.io Types ──────────────────────────────────────────────────────────
-
-interface ServerToClientEvents {
-  'message:new': (message: any) => void;
-  'message:seen': (data: { conversationId: string; seenBy: string; upToMessageId: string }) => void;
-  'message:deleted': (data: { messageId: string; conversationId: string }) => void;
-  'typing:update': (data: { conversationId: string; userId: string; isTyping: boolean }) => void;
-  'user:status': (data: { userId: string; isOnline: boolean; lastSeen: Date }) => void;
-  'group:member_added': (data: { conversationId: string; addedUser: any }) => void;
-  'group:member_removed': (data: { conversationId: string; removedUserId: string; removedBy: string }) => void;
-  'notification:new': (notification: any) => void;
-  error: (error: { code: string; message: string }) => void;
-}
-
-interface ClientToServerEvents {
-  'message:send': (data: { conversationId: string; content?: string; attachments?: any[]; replyToId?: string }) => void;
-  'message:seen': (data: { conversationId: string; messageId: string }) => void;
-  'typing:start': (data: { conversationId: string }) => void;
-  'typing:stop': (data: { conversationId: string }) => void;
-  'conversation:open': (data: { conversationId: string }) => void;
-}
-
-interface SocketData { userId: string }
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-/** Get all member IDs for a conversation (DM participants or group members) */
-async function getConversationMemberIds(conversationId: string): Promise<string[]> {
-  const conv = await Conversation.findById(conversationId).lean();
-  if (!conv) return [];
-  const c = conv as any;
-  if (c.type === 'group') return (c.members || []).map((m: any) => m.toString());
-  return (c.participants || []).map((p: any) => p.toString());
-}
-
-/** Create a notification and emit it via socket */
-async function createAndEmitNotification(
-  io: SocketIOServer,
-  params: { recipientId: string; type: string; actorId?: string; title: string; body: string; link: string; entityId?: string; entityModel?: string }
-) {
-  if (params.actorId && params.actorId === params.recipientId) return;
-  try {
-    const notification = await Notification.create({
-      recipient: params.recipientId,
-      type: params.type,
-      title: params.title,
-      body: params.body,
-      link: params.link,
-      actor: params.actorId || undefined,
-      entityId: params.entityId || undefined,
-      entityModel: params.entityModel || undefined,
-    });
-    await notification.populate('actor', 'fullName profilePicture');
-    io.to(`user:${params.recipientId}`).emit('notification:new', notification.toObject());
-  } catch (err) {
-    console.error('createAndEmitNotification error:', err);
+// Room status endpoint
+app.get('/room-status', (req, res) => {
+  const { sessionId } = req.query;
+  if (!sessionId || typeof sessionId !== 'string') {
+    return res.status(400).json({ error: 'sessionId required' });
   }
-}
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
+  const room = rooms.get(sessionId);
+  const active = room && room.participants.size > 0;
 
-async function main() {
-  await connectDB();
+  res.json({
+    sessionId,
+    active,
+    participantCount: room?.participants.size || 0,
+    participants: room
+      ? Array.from(room.participants.values()).map(p => ({
+          userId: p.userId,
+          displayName: p.displayName,
+          role: p.role,
+        }))
+      : [],
+  });
+});
 
-  // ✅ THE FIX: create Express app and wrap it in an HTTP server
-  const app = express();
-  app.use(express.json());
+// Socket.IO event handlers
+io.on('connection', (socket) => {
+  console.log(`[Socket] Client connected: ${socket.id}`);
 
-  const httpServer = createServer(app);
+  socket.on('join-room', (data: { sessionId: string; userId: string; displayName: string; role: 'initiator' | 'participant' }) => {
+    const { sessionId, userId, displayName, role } = data;
 
-  const io = new SocketIOServer<ClientToServerEvents, ServerToClientEvents, {}, SocketData>(httpServer, {
-    cors: {
-      origin: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
-      methods: ['GET', 'POST'],
-      credentials: true,
-    },
+    console.log(`[Room] ${userId} (${role}) joining room ${sessionId}`);
+
+    // Create room if it doesn't exist
+    if (!rooms.has(sessionId)) {
+      rooms.set(sessionId, {
+        participants: new Map(),
+        createdAt: Date.now(),
+        sessionId,
+      });
+    }
+
+    const room = rooms.get(sessionId)!;
+
+    // Add participant to room
+    room.participants.set(socket.id, {
+      socketId: socket.id,
+      userId,
+      displayName,
+      role,
+      joinedAt: Date.now(),
+    });
+
+    // Join socket to room
+    socket.join(sessionId);
+
+    // Notify all participants in room
+    io.to(sessionId).emit('user-joined', {
+      socketId: socket.id,
+      userId,
+      displayName,
+      role,
+      participantCount: room.participants.size,
+    });
+
+    // If both participants are present, notify initiator
+    if (room.participants.size === 2) {
+      const initiator = Array.from(room.participants.values()).find(p => p.role === 'initiator');
+      if (initiator) {
+        io.to(initiator.socketId).emit('ready-to-call', {
+          participantCount: room.participants.size,
+        });
+      }
+    }
+
+    console.log(`[Room] ${sessionId} now has ${room.participants.size} participants`);
   });
 
-  // Expose io globally so Next.js API routes can emit notifications
-  (global as any)._socketIO = io;
+  socket.on('call-user', (data: { to: string; offer: any }) => {
+    console.log(`[Call] Offer sent from ${socket.id} to ${data.to}`);
+    io.to(data.to).emit('incoming-call', {
+      from: socket.id,
+      offer: data.offer,
+    });
+  });
 
-  // ─── Auth Middleware ──────────────────────────────────────────────────────
+  socket.on('call-accepted', (data: { to: string; answer: any }) => {
+    console.log(`[Call] Answer sent from ${socket.id} to ${data.to}`);
+    io.to(data.to).emit('call-accepted', {
+      from: socket.id,
+      answer: data.answer,
+    });
+  });
 
-  io.use(async (socket, next) => {
-    try {
-      const token = socket.handshake.auth?.token as string | undefined;
-      if (!token) {
-        socket.emit('error', { code: 'NO_TOKEN', message: 'Authentication token required' });
-        return next(new Error('Authentication token required'));
-      }
-      let decoded: { userId: string };
-      try {
-        decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
-      } catch {
-        socket.emit('error', { code: 'INVALID_TOKEN', message: 'Invalid or expired token' });
-        return next(new Error('Invalid or expired token'));
-      }
-      const user = await User.findById(decoded.userId).lean();
-      if (!user) {
-        socket.emit('error', { code: 'USER_NOT_FOUND', message: 'User not found' });
-        return next(new Error('User not found'));
-      }
-      if ((user as any).isBanned) {
-        socket.emit('error', { code: 'USER_BANNED', message: 'Account is banned' });
-        return next(new Error('User is banned'));
-      }
-      socket.data.userId = decoded.userId;
-      next();
-    } catch (err) {
-      console.error('Socket auth error:', err);
-      socket.emit('error', { code: 'AUTH_FAILED', message: 'Authentication failed' });
-      next(new Error('Authentication failed'));
+  socket.on('ice-candidate', (data: { to: string; candidate: any }) => {
+    io.to(data.to).emit('ice-candidate', {
+      from: socket.id,
+      candidate: data.candidate,
+    });
+  });
+
+  socket.on('chat-message', (data: { sessionId: string; message: string; timestamp: number }) => {
+    const room = rooms.get(data.sessionId);
+    if (room) {
+      // Send message to all participants except sender
+      socket.to(data.sessionId).emit('chat-message', {
+        from: socket.id,
+        message: data.message,
+        timestamp: data.timestamp,
+      });
     }
   });
 
-  // ─── Connection Handler ───────────────────────────────────────────────────
+  socket.on('end-call', (data: { sessionId: string }) => {
+    const room = rooms.get(data.sessionId);
+    if (room) {
+      room.participants.delete(socket.id);
+      io.to(data.sessionId).emit('call-ended', {
+        from: socket.id,
+      });
 
-  io.on('connection', async (socket) => {
-    const userId = socket.data.userId;
-    console.log(`🔌 User ${userId} connected`);
-
-    socket.join(`user:${userId}`);
-    await User.findByIdAndUpdate(userId, { lastSeen: new Date() });
-    io.emit('user:status', { userId, isOnline: true, lastSeen: new Date() });
-
-    // ── message:send ────────────────────────────────────────────────────────
-    socket.on('message:send', async (data) => {
-      try {
-        const { conversationId, content, attachments, replyToId } = data;
-
-        if (!content && (!attachments || attachments.length === 0)) {
-          socket.emit('error', { code: 'EMPTY_MESSAGE', message: 'Message must have content or attachments' });
-          return;
-        }
-
-        const conversation = await Conversation.findById(conversationId);
-        if (!conversation) {
-          socket.emit('error', { code: 'NOT_FOUND', message: 'Conversation not found' });
-          return;
-        }
-
-        const c = conversation as any;
-        const memberIds: string[] = c.type === 'group'
-          ? (c.members || []).map((m: any) => m.toString())
-          : (c.participants || []).map((p: any) => p.toString());
-
-        if (!memberIds.includes(userId)) {
-          socket.emit('error', { code: 'FORBIDDEN', message: 'Not a member of this conversation' });
-          return;
-        }
-
-        const message = new Message({
-          conversationId,
-          sender: userId,
-          content: content || undefined,
-          attachments: attachments || [],
-          replyTo: replyToId || undefined,
-          status: 'sent',
-        });
-        await message.save();
-
-        // Update conversation
-        const incOps = Object.fromEntries(
-          memberIds.filter((pid) => pid !== userId).map((pid) => [`unreadCounts.${pid}`, 1])
-        );
-        await Conversation.findByIdAndUpdate(conversationId, {
-          lastMessage: message._id,
-          lastActivity: new Date(),
-          $inc: incOps,
-        });
-
-        await message.populate('sender', 'fullName profilePicture');
-        if (replyToId) {
-          await message.populate({ path: 'replyTo', populate: { path: 'sender', select: 'fullName' } });
-        }
-
-        const messageObj = message.toObject();
-
-        // Emit to all members
-        memberIds.forEach((pid) => io.to(`user:${pid}`).emit('message:new', messageObj));
-
-        // Notify offline members
-        const onlineSockets = await io.fetchSockets();
-        const onlineUserIds = new Set(onlineSockets.map((s) => (s.data as any).userId));
-
-        const senderUser = await User.findById(userId).select('fullName').lean();
-        const senderName = (senderUser as any)?.fullName || 'Someone';
-        const convName = c.type === 'group' ? (c.name || 'Group') : senderName;
-
-        await Promise.all(
-          memberIds
-            .filter((pid) => pid !== userId && !onlineUserIds.has(pid))
-            .map((pid) =>
-              createAndEmitNotification(io, {
-                recipientId: pid,
-                type: 'message',
-                actorId: userId,
-                title: `New message from ${convName}`,
-                body: content ? content.slice(0, 80) : '📎 Attachment',
-                link: '/dashboard/messages',
-                entityId: conversationId,
-                entityModel: 'Conversation',
-              })
-            )
-        );
-      } catch (err) {
-        console.error('message:send error:', err);
-        socket.emit('error', { code: 'SEND_FAILED', message: 'Failed to send message' });
+      // Clean up empty rooms
+      if (room.participants.size === 0) {
+        rooms.delete(data.sessionId);
+        console.log(`[Room] Deleted empty room ${data.sessionId}`);
       }
-    });
-
-    // ── message:seen ────────────────────────────────────────────────────────
-    socket.on('message:seen', async (data) => {
-      try {
-        const { conversationId, messageId } = data;
-
-        await Message.updateMany(
-          { conversationId, sender: { $ne: userId }, _id: { $lte: messageId }, status: { $ne: 'seen' } },
-          { status: 'seen' }
-        );
-
-        await Conversation.findByIdAndUpdate(conversationId, {
-          $unset: { [`unreadCounts.${userId}`]: 1 },
-        });
-
-        const memberIds = await getConversationMemberIds(conversationId);
-        memberIds
-          .filter((pid) => pid !== userId)
-          .forEach((pid) => {
-            io.to(`user:${pid}`).emit('message:seen', { conversationId, seenBy: userId, upToMessageId: messageId });
-          });
-      } catch (err) {
-        console.error('message:seen error:', err);
-      }
-    });
-
-    // ── typing:start ────────────────────────────────────────────────────────
-    socket.on('typing:start', async (data) => {
-      try {
-        const memberIds = await getConversationMemberIds(data.conversationId);
-        memberIds.filter((pid) => pid !== userId).forEach((pid) => {
-          io.to(`user:${pid}`).emit('typing:update', { conversationId: data.conversationId, userId, isTyping: true });
-        });
-      } catch (err) { console.error('typing:start error:', err); }
-    });
-
-    // ── typing:stop ─────────────────────────────────────────────────────────
-    socket.on('typing:stop', async (data) => {
-      try {
-        const memberIds = await getConversationMemberIds(data.conversationId);
-        memberIds.filter((pid) => pid !== userId).forEach((pid) => {
-          io.to(`user:${pid}`).emit('typing:update', { conversationId: data.conversationId, userId, isTyping: false });
-        });
-      } catch (err) { console.error('typing:stop error:', err); }
-    });
-
-    // ── conversation:open ───────────────────────────────────────────────────
-    socket.on('conversation:open', async (data) => {
-      try {
-        await Conversation.findByIdAndUpdate(data.conversationId, {
-          $unset: { [`unreadCounts.${userId}`]: 1 },
-        });
-      } catch (err) { console.error('conversation:open error:', err); }
-    });
-
-    // ── disconnect ──────────────────────────────────────────────────────────
-    socket.on('disconnect', async () => {
-      console.log(`🔌 User ${userId} disconnected`);
-      try {
-        const lastSeen = new Date();
-        await User.findByIdAndUpdate(userId, { lastSeen });
-        io.emit('user:status', { userId, isOnline: false, lastSeen });
-      } catch (err) { console.error('disconnect error:', err); }
-    });
+    }
   });
 
-  httpServer.listen(port, () => {
-    console.log(`🚀 Socket server ready at http://${hostname}:${port}`);
-  });
-}
+  socket.on('disconnect', () => {
+    console.log(`[Socket] Client disconnected: ${socket.id}`);
 
-main().catch((err) => {
-  console.error('Fatal error:', err);
-  process.exit(1);
+    // Find and remove from all rooms
+    for (const [sessionId, room] of rooms.entries()) {
+      if (room.participants.has(socket.id)) {
+        room.participants.delete(socket.id);
+        io.to(sessionId).emit('user-left', {
+          socketId: socket.id,
+          participantCount: room.participants.size,
+        });
+
+        // Clean up empty rooms
+        if (room.participants.size === 0) {
+          rooms.delete(sessionId);
+          console.log(`[Room] Deleted empty room ${sessionId}`);
+        }
+      }
+    }
+  });
+});
+
+const PORT = process.env.SIGNALING_SERVER_PORT || 4000;
+httpServer.listen(PORT, () => {
+  console.log(`🚀 Signaling server running on port ${PORT}`);
+  console.log(`📡 CORS enabled for: ${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}`);
 });

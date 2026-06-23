@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { v2 as cloudinary } from 'cloudinary';
 import connectToDatabase from '@/lib/db';
 import User from '@/models/User';
+import University from '@/models/University';
 import { getUserFromRequest } from '@/lib/auth';
 import { VerificationStatus } from '@/lib/enums';
 import { successResponse, errorResponse } from '@/lib/apiResponse';

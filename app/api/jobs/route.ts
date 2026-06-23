@@ -3,6 +3,7 @@ import { getUserFromRequest } from '@/lib/auth';
 import connectDB from '@/lib/mongodb';
 import Job, { JobStatus } from '@/models/Job';
 import User from '@/models/User';
+import University from '@/models/University';
 
 export async function GET(request: NextRequest) {
   try {

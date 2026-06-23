@@ -49,6 +49,7 @@ export default function ProfilePage() {
   const { user: currentUser } = useAuthStore();
   const [profileUser, setProfileUser] = useState<ProfileUser | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<string>('none');
+  const [connectionCount, setConnectionCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [connecting, setConnecting] = useState(false);
 
@@ -59,7 +60,14 @@ export default function ProfilePage() {
         const profileResponse = await fetch(`/api/user/profile/${userId}`);
         if (profileResponse.ok) {
           const profileData = await profileResponse.json();
-          setProfileUser(profileData.user);
+          setProfileUser(profileData.data?.user || profileData.user);
+        }
+
+        // Load connection count
+        const countResponse = await fetch(`/api/connections/count/${userId}`);
+        if (countResponse.ok) {
+          const countData = await countResponse.json();
+          setConnectionCount(countData.data?.count || 0);
         }
 
         // Load connection status (if not viewing own profile)
@@ -218,12 +226,9 @@ export default function ProfilePage() {
           </div>
           <div className="flex flex-col items-end space-y-2">
             {getConnectionButton()}
-            {!isOwnProfile && (
-              <div className="text-sm text-gray-500">
-                {/* Mutual connections count would be implemented here */}
-                {/* 0 mutual connections */}
-              </div>
-            )}
+            <div className="text-sm text-gray-600 font-medium">
+              {connectionCount} {connectionCount === 1 ? 'connection' : 'connections'}
+            </div>
           </div>
         </div>
       </div>

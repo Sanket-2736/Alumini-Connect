@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import { toast } from 'sonner';
 import { UserRole } from '@/lib/enums';
 
 interface FormData {
@@ -148,7 +149,7 @@ export default function RegisterPage() {
       });
 
       if (response.data.success) {
-        alert('Registration successful! Your documents are pending admin verification. You will be able to sign in once approved.');
+        toast.success('Registration successful! Your documents are pending admin verification. You will be able to sign in once approved.');
         router.push('/login');
       }
     } catch (error: any) {

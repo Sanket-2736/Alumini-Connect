@@ -4,6 +4,7 @@ import connectDB from '@/lib/mongodb';
 import Post from '@/models/Post';
 import Comment from '@/models/Comment';
 import User from '@/models/User';
+import University from '@/models/University';
 import { Types } from 'mongoose';
 export async function GET(
   request: NextRequest,

@@ -3,6 +3,11 @@ import { getUserFromRequest } from '@/lib/auth';
 import connectDB from '@/lib/mongodb';
 import Post, { PostType } from '@/models/Post';
 import User from '@/models/User';
+import University from '@/models/University';
+import Connection from '@/models/Connection';
+import Notification from '@/models/Notification';
+import { NotificationType } from '@/models/Notification';
+import { ConnectionStatus } from '@/models/Connection';
 import { v2 as cloudinary } from 'cloudinary';
 import { writeFile, unlink } from 'fs/promises';
 import { join } from 'path';
@@ -93,6 +98,49 @@ export async function POST(request: NextRequest) {
 
     // Populate author for response
     await post.populate('author', 'fullName profilePicture university verificationStatus');
+
+    // Send notifications to connected students if author is alumni
+    if (user.role === 'alumni') {
+      try {
+        // Find all accepted connections where this user is the requester or recipient
+        const connections = await Connection.find({
+          $or: [
+            { requester: user._id, status: ConnectionStatus.ACCEPTED },
+            { recipient: user._id, status: ConnectionStatus.ACCEPTED },
+          ],
+        }).select('requester recipient');
+
+        // Get all connected user IDs
+        const connectedUserIds = connections.map(conn => 
+          conn.requester.toString() === user._id.toString() ? conn.recipient : conn.requester
+        );
+
+        // Get all connected users to check if they are students
+        const connectedUsers = await User.find({
+          _id: { $in: connectedUserIds },
+          role: 'student',
+        }).select('_id');
+
+        // Create notifications for all connected students
+        const notifications = connectedUsers.map(connectedUser => ({
+          recipient: connectedUser._id,
+          type: NotificationType.POST_CREATED,
+          title: `${user.fullName} posted something`,
+          body: post.content.substring(0, 100) + (post.content.length > 100 ? '...' : ''),
+          link: `/dashboard/feed`,
+          actor: user._id,
+          entityId: post._id,
+          entityModel: 'Post',
+        }));
+
+        if (notifications.length > 0) {
+          await Notification.insertMany(notifications);
+        }
+      } catch (error) {
+        console.error('Error sending notifications:', error);
+        // Don't fail the post creation if notifications fail
+      }
+    }
 
     return NextResponse.json({
       post: {

@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import Link from 'next/link';
 import { useAuthStore } from '@/lib/authStore';
+import { UserRole } from '@/lib/enums';
 
 interface CreatePostBoxProps {
   onPostCreated: (post: any) => void;
@@ -12,11 +14,29 @@ export default function CreatePostBox({ onPostCreated }: CreatePostBoxProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [content, setContent] = useState('');
   const [images, setImages] = useState<File[]>([]);
-  const [type, setType] = useState<'post' | 'success_story' | 'announcement'>('post');
+  const [type, setType] = useState<'post' | 'success_story' | 'announcement' | 'event_promo'>('post');
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
   const [posting, setPosting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Only alumni can create posts
+  if (user?.role !== UserRole.ALUMNI) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm p-4">
+        <div className="flex items-center gap-3">
+          <img
+            src={user?.profilePicture || '/default-avatar.png'}
+            alt={user?.fullName}
+            className="w-10 h-10 rounded-full object-cover"
+          />
+          <div className="flex-1 px-4 py-2 bg-gray-100 rounded-full text-gray-600 text-left">
+            Only alumni can create posts
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -110,7 +130,8 @@ export default function CreatePostBox({ onPostCreated }: CreatePostBoxProps) {
                 >
                   <option value="post">Regular Post</option>
                   <option value="success_story">Success Story</option>
-                  <option value="announcement">Announcement (Admin Only)</option>
+                  <option value="announcement">Announcement</option>
+                  <option value="event_promo">Event Promotion</option>
                 </select>
               </div>
             </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 
 interface VerificationDoc {
   userId: string;
@@ -72,10 +73,11 @@ export default function VerificationsPage() {
         throw new Error('Failed to approve verification');
       }
 
+      toast.success('User approved successfully');
       setSelectedUser(null);
       fetchVerifications();
     } catch (err: any) {
-      alert(err.message || 'Failed to approve verification');
+      toast.error(err.message || 'Failed to approve verification');
     } finally {
       setActionLoading(false);
     }
@@ -83,7 +85,7 @@ export default function VerificationsPage() {
 
   const handleReject = async (userId: string) => {
     if (!rejectionReason.trim()) {
-      alert('Please provide a rejection reason');
+      toast.warning('Please provide a rejection reason');
       return;
     }
 
@@ -103,11 +105,12 @@ export default function VerificationsPage() {
         throw new Error('Failed to reject verification');
       }
 
+      toast.success('User rejected successfully');
       setSelectedUser(null);
       setRejectionReason('');
       fetchVerifications();
     } catch (err: any) {
-      alert(err.message || 'Failed to reject verification');
+      toast.error(err.message || 'Failed to reject verification');
     } finally {
       setActionLoading(false);
     }
@@ -135,71 +138,94 @@ export default function VerificationsPage() {
 
       {verifications.length === 0 ? (
         <div className="bg-white rounded-lg shadow p-6 text-center">
-          <p className="text-gray-600">No pending verifications</p>
+          <p className="text-gray-600">No users with documents</p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Email
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  University
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Submitted
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {verifications.map((verification) => (
-                <tr key={verification.userId} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {verification.fullName}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {verification.email}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {verification.university}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {verifications.map((verification) => (
+            <div
+              key={verification.userId}
+              className="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden cursor-pointer"
+              onClick={() => setSelectedUser(verification)}
+            >
+              {/* Card Header */}
+              <div className="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-4 text-white">
+                <h3 className="text-lg font-semibold truncate">{verification.fullName}</h3>
+                <p className="text-blue-100 text-sm">{verification.email}</p>
+              </div>
+
+              {/* Card Content */}
+              <div className="px-6 py-4">
+                <div className="space-y-3 mb-4">
+                  {/* University */}
+                  <div>
+                    <p className="text-xs text-gray-600 mb-1">University</p>
+                    <p className="text-sm font-medium text-gray-900">{verification.university}</p>
+                  </div>
+
+                  {/* Department & Batch */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <p className="text-xs text-gray-600 mb-1">Department</p>
+                      <p className="text-sm font-medium text-gray-900">{verification.department}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600 mb-1">Batch</p>
+                      <p className="text-sm font-medium text-gray-900">{verification.batch}</p>
+                    </div>
+                  </div>
+
+                  {/* Role */}
+                  <div>
+                    <p className="text-xs text-gray-600 mb-1">Role</p>
+                    <p className="text-sm font-medium text-gray-900 capitalize">{verification.role}</p>
+                  </div>
+
+                  {/* Status */}
+                  <div className="pt-2 border-t border-gray-200">
+                    <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
                       verification.verificationStatus === 'pending'
                         ? 'bg-yellow-100 text-yellow-800'
                         : verification.verificationStatus === 'approved'
                         ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
+                        : verification.verificationStatus === 'rejected'
+                        ? 'bg-red-100 text-red-800'
+                        : 'bg-gray-100 text-gray-800'
                     }`}>
-                      {verification.verificationStatus}
+                      {verification.verificationStatus.charAt(0).toUpperCase() + verification.verificationStatus.slice(1)}
                     </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {new Date(verification.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button
-                      onClick={() => setSelectedUser(verification)}
-                      className="text-indigo-600 hover:text-indigo-900"
-                    >
-                      Review
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </div>
+
+                  {/* Submitted Date */}
+                  <div className="pt-2 border-t border-gray-200">
+                    <p className="text-xs text-gray-600">Submitted</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      {new Date(verification.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+
+                  {/* Documents Count */}
+                  <div className="pt-2 border-t border-gray-200">
+                    <p className="text-xs text-gray-600">Documents</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      {verification.verificationDocs.length} file{verification.verificationDocs.length !== 1 ? 's' : ''}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Review Button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedUser(verification);
+                  }}
+                  className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium text-sm"
+                >
+                  Review Documents
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
@@ -288,7 +314,6 @@ export default function VerificationsPage() {
                 </div>
               </div>
 
-              {/* Rejection Reason (if rejecting) */}
               {selectedUser.verificationStatus === 'pending' && (
                 <div className="mb-6">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
