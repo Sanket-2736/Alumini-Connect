@@ -38,6 +38,6 @@
     "**/*.tsx"
   ],
   "exclude": [
-    "node_modules", "signaling-server"
+    "node_modules", "signaling-server", "scripts"
   ]
 }
