@@ -2,11 +2,7 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-/**
- * Send email verification link
- * @param email - Recipient email
- * @param token - Verification token
- */
+
 export async function sendEmailVerification(email: string, token: string): Promise<void> {
   const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-email?token=${token}`;
 
@@ -33,11 +29,7 @@ export async function sendEmailVerification(email: string, token: string): Promi
   }
 }
 
-/**
- * Send password reset email
- * @param email - Recipient email
- * @param token - Reset token
- */
+
 export async function sendPasswordReset(email: string, token: string): Promise<void> {
   const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/reset-password?token=${token}`;
 

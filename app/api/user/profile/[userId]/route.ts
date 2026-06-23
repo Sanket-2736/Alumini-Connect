@@ -4,10 +4,7 @@ import User from '@/models/User';
 import University from '@/models/University';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 
-/**
- * GET /api/user/profile/[userId]
- * Get public profile information for a user
- */
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ userId: string }> }
@@ -15,20 +12,14 @@ export async function GET(
   try {
     const { userId } = await params;
 
-    await connectToDatabase();
-
-    // Try to find user by _id first
+    await connectToDatabase();
     let user = await User.findOne({ _id: userId, isBanned: false })
       .select('_id fullName email profilePicture bio university department batch workDetails skills socialLinks verificationStatus createdAt')
-      .populate('university', 'name slug');
-
-    // If not found and userId looks like it might be a string ID, try without the isBanned filter
+      .populate('university', 'name slug');
     if (!user) {
       user = await User.findById(userId)
         .select('_id fullName email profilePicture bio university department batch workDetails skills socialLinks verificationStatus createdAt isBanned')
-        .populate('university', 'name slug');
-      
-      // Check if user is banned
+        .populate('university', 'name slug');
       if (user && user.isBanned) {
         return errorResponse('User not found', 404);
       }

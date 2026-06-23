@@ -34,9 +34,7 @@ export default function DiscoverPage() {
   const [error, setError] = useState('');
   const [sentRequests, setSentRequests] = useState<Set<string>>(new Set());
   const [selectedUser, setSelectedUser] = useState<Recommendation | null>(null);
-  const [connections, setConnections] = useState<Set<string>>(new Set());
-
-  // Filters
+  const [connections, setConnections] = useState<Set<string>>(new Set());
   const [filters, setFilters] = useState({
     university: '',
     batch: '',
@@ -165,11 +163,11 @@ export default function DiscoverPage() {
         </p>
       </div>
 
-      {/* Filters */}
+      {}
       <div className="bg-white rounded-lg shadow p-6 mb-8">
         <h2 className="text-lg font-semibold mb-4">Filters</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          {/* Search */}
+          {}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Search Name/Email
@@ -183,7 +181,7 @@ export default function DiscoverPage() {
             />
           </div>
 
-          {/* University */}
+          {}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               University
@@ -200,7 +198,7 @@ export default function DiscoverPage() {
             </select>
           </div>
 
-          {/* Batch */}
+          {}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Batch/Year
@@ -217,7 +215,7 @@ export default function DiscoverPage() {
             </select>
           </div>
 
-          {/* Department */}
+          {}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Department
@@ -234,7 +232,7 @@ export default function DiscoverPage() {
             </select>
           </div>
 
-          {/* Role */}
+          {}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Role
@@ -251,7 +249,7 @@ export default function DiscoverPage() {
           </div>
         </div>
 
-        {/* Clear Filters */}
+        {}
         {Object.values(filters).some(v => v) && (
           <button
             onClick={() => setFilters({ university: '', batch: '', department: '', role: '', searchTerm: '' })}
@@ -262,12 +260,12 @@ export default function DiscoverPage() {
         )}
       </div>
 
-      {/* Results Count */}
+      {}
       <div className="mb-4 text-gray-600">
         Showing {filteredRecommendations.length} of {recommendations.length} recommendations
       </div>
 
-      {/* Recommendations Grid */}
+      {}
       {filteredRecommendations.length === 0 ? (
         <div className="bg-white rounded-lg shadow p-8 text-center">
           <p className="text-gray-600">No recommendations match your filters</p>
@@ -280,7 +278,7 @@ export default function DiscoverPage() {
               className="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden cursor-pointer"
               onClick={() => setSelectedUser(rec)}
             >
-              {/* Header with match score */}
+              {}
               <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4 text-white">
                 <div className="flex justify-between items-start">
                   <div>
@@ -293,7 +291,7 @@ export default function DiscoverPage() {
                 </div>
               </div>
 
-              {/* Profile Picture */}
+              {}
               {rec.profilePicture && (
                 <div className="relative h-48 bg-gray-200">
                   <img
@@ -304,9 +302,9 @@ export default function DiscoverPage() {
                 </div>
               )}
 
-              {/* Content */}
+              {}
               <div className="px-6 py-4">
-                {/* Match Reasons */}
+                {}
                 <div className="mb-4">
                   <div className="flex flex-wrap gap-2">
                     {rec.matchReasons.map((reason, idx) => (
@@ -320,7 +318,7 @@ export default function DiscoverPage() {
                   </div>
                 </div>
 
-                {/* Details */}
+                {}
                 <div className="space-y-2 mb-4 text-sm text-gray-600">
                   <p>
                     <span className="font-semibold text-gray-900">University:</span> {rec.university}
@@ -333,12 +331,12 @@ export default function DiscoverPage() {
                   </p>
                 </div>
 
-                {/* Bio */}
+                {}
                 {rec.bio && (
                   <p className="text-sm text-gray-600 mb-4 line-clamp-2">{rec.bio}</p>
                 )}
 
-                {/* Skills */}
+                {}
                 {rec.skills.length > 0 && (
                   <div className="mb-4">
                     <p className="text-xs font-semibold text-gray-900 mb-2">Skills</p>
@@ -360,7 +358,7 @@ export default function DiscoverPage() {
                   </div>
                 )}
 
-                {/* Action Button */}
+                {}
                 {isConnected(rec.userId) ? (
                   <Link
                     href={`/dashboard/messages?userId=${rec.userId}`}
@@ -391,7 +389,7 @@ export default function DiscoverPage() {
         </div>
       )}
 
-      {/* Profile Modal */}
+      {}
       {selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -406,7 +404,7 @@ export default function DiscoverPage() {
             </div>
 
             <div className="p-6">
-              {/* Profile Picture */}
+              {}
               {selectedUser.profilePicture && (
                 <div className="relative h-64 bg-gray-200 rounded-lg mb-6 overflow-hidden">
                   <img
@@ -417,7 +415,7 @@ export default function DiscoverPage() {
                 </div>
               )}
 
-              {/* Basic Info */}
+              {}
               <div className="mb-6 p-4 bg-gray-50 rounded-lg">
                 <h3 className="font-semibold text-gray-900 mb-3">Basic Information</h3>
                 <div className="grid grid-cols-2 gap-4">
@@ -448,7 +446,7 @@ export default function DiscoverPage() {
                 </div>
               </div>
 
-              {/* Bio */}
+              {}
               {selectedUser.bio && (
                 <div className="mb-6 p-4 bg-gray-50 rounded-lg">
                   <h3 className="font-semibold text-gray-900 mb-2">About</h3>
@@ -456,7 +454,7 @@ export default function DiscoverPage() {
                 </div>
               )}
 
-              {/* Skills */}
+              {}
               {selectedUser.skills.length > 0 && (
                 <div className="mb-6 p-4 bg-gray-50 rounded-lg">
                   <h3 className="font-semibold text-gray-900 mb-3">Skills</h3>
@@ -473,7 +471,7 @@ export default function DiscoverPage() {
                 </div>
               )}
 
-              {/* Match Reasons */}
+              {}
               <div className="mb-6 p-4 bg-gray-50 rounded-lg">
                 <h3 className="font-semibold text-gray-900 mb-3">Why Recommended</h3>
                 <div className="flex flex-wrap gap-2">
@@ -488,7 +486,7 @@ export default function DiscoverPage() {
                 </div>
               </div>
 
-              {/* Action Buttons */}
+              {}
               <div className="flex gap-3">
                 {isConnected(selectedUser.userId) ? (
                   <>

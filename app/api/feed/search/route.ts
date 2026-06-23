@@ -17,9 +17,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Search query is required' }, { status: 400 });
     }
 
-    const skip = (page - 1) * limit;
-
-    // Text search
+    const skip = (page - 1) * limit;
     const posts = await Post.find(
       { $text: { $search: q }, isArchived: false },
       { score: { $meta: 'textScore' } }

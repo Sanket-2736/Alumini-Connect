@@ -8,9 +8,7 @@ export async function GET(request: NextRequest) {
   try {
     await connectDB();
     const user = await getUserFromRequest(request);
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    // Fetch both DMs (participants) and groups (members)
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const conversations = await Conversation.find({
       $or: [{ participants: user._id }, { members: user._id }],
       isArchived: { $ne: true },
@@ -20,9 +18,7 @@ export async function GET(request: NextRequest) {
         populate: { path: 'sender', select: 'fullName profilePicture' },
       })
       .sort({ lastActivity: -1 })
-      .lean();
-
-    // Populate participants for DMs only
+      .lean();
     const dmIds = conversations.filter((c) => c.type === 'dm').map((c) => c._id);
     const populatedDMs = await Conversation.find({ _id: { $in: dmIds } })
       .populate({
@@ -68,8 +64,7 @@ export async function GET(request: NextRequest) {
           unreadCount,
           createdAt: conv.createdAt,
         };
-      } else {
-        // Group
+      } else {
         return {
           _id: conv._id,
           type: 'group',

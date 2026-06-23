@@ -19,12 +19,8 @@ const createUniversitySchema = z.object({
   totalAlumni: z.number().min(0).optional(),
 });
 
-/**
- * GET /api/admin/universities
- * Get all universities (admin view)
- */
-export async function GET(request: NextRequest) {
-  // Check admin access
+
+export async function GET(request: NextRequest) {
   const adminCheck = requireAdmin(request);
   if (adminCheck) return adminCheck;
 
@@ -41,19 +37,13 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/**
- * POST /api/admin/universities
- * Create a new university (accepts multipart/form-data for logo upload)
- */
-export async function POST(request: NextRequest) {
-  // Check admin access
+
+export async function POST(request: NextRequest) {
   const adminCheck = requireAdmin(request);
   if (adminCheck) return adminCheck;
 
   try {
-    const formData = await request.formData();
-
-    // Parse fields from FormData
+    const formData = await request.formData();
     const rawData = {
       name: formData.get('name') as string,
       location: formData.get('location') as string,
@@ -75,21 +65,15 @@ export async function POST(request: NextRequest) {
 
     const validatedData = createUniversitySchema.parse(rawData);
 
-    await connectToDatabase();
-
-    // Generate slug from name
+    await connectToDatabase();
     const slug = validatedData.name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
-
-    // Check if university already exists
+      .replace(/^-+|-+$/g, '');
     const existingUniversity = await University.findOne({ slug });
     if (existingUniversity) {
       return errorResponse('University with this name already exists', 409);
-    }
-
-    // Handle logo upload if provided
+    }
     let logoUrl: string | undefined;
     const logoFile = formData.get('logo') as File | null;
     if (logoFile && logoFile.size > 0) {

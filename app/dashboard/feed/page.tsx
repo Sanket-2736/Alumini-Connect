@@ -80,9 +80,9 @@ export default function FeedPage() {
     <div className="bg-gray-50 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Feed - 65% */}
+          {}
           <div className="lg:col-span-2 space-y-6">
-            {/* Scope Selector */}
+            {}
             <div className="flex gap-2 mb-4">
               <button
                 onClick={() => setScope('global')}
@@ -106,12 +106,12 @@ export default function FeedPage() {
               </button>
             </div>
 
-            {/* Create Post Box */}
+            {}
             {user && (
               <CreatePostBox onPostCreated={handlePostCreated} />
             )}
 
-            {/* Posts List */}
+            {}
             <div className="space-y-4">
               {loading ? (
                 <div className="text-center py-12">
@@ -127,7 +127,7 @@ export default function FeedPage() {
                     <PostCard key={post._id} post={post} onUpdate={() => loadPosts(1)} />
                   ))}
 
-                  {/* Load More */}
+                  {}
                   {hasMore && (
                     <div className="text-center pt-6">
                       <button
@@ -143,7 +143,7 @@ export default function FeedPage() {
             </div>
           </div>
 
-          {/* Right Sidebar - 35% */}
+          {}
           <div className="hidden lg:block">
             <FeedSidebar />
           </div>

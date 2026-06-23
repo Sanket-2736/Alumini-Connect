@@ -61,7 +61,7 @@ export default function StatsPage() {
     <div>
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Statistics</h1>
 
-      {/* User Stats */}
+      {}
       <div className="mb-8">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">User Statistics</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -84,7 +84,7 @@ export default function StatsPage() {
         </div>
       </div>
 
-      {/* Role Stats */}
+      {}
       <div className="mb-8">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">User Roles</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -99,7 +99,7 @@ export default function StatsPage() {
         </div>
       </div>
 
-      {/* Verification Stats */}
+      {}
       <div className="mb-8">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Verification Status</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -118,7 +118,7 @@ export default function StatsPage() {
         </div>
       </div>
 
-      {/* Content Stats */}
+      {}
       <div className="mb-8">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Content Statistics</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -141,7 +141,7 @@ export default function StatsPage() {
         </div>
       </div>
 
-      {/* Chat Stats */}
+      {}
       <div className="mb-8">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Chat Statistics</h2>
         <div className="bg-white rounded-lg shadow p-4">
@@ -150,7 +150,7 @@ export default function StatsPage() {
         </div>
       </div>
 
-      {/* Users by University */}
+      {}
       {stats?.usersByUniversity && stats.usersByUniversity.length > 0 && (
         <div className="mb-8">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Users by University</h2>

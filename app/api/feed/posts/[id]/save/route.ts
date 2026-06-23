@@ -21,9 +21,7 @@ export async function POST(
     const job = await Job.findById(id);
     if (!job) {
       return NextResponse.json({ error: 'Job not found' }, { status: 404 });
-    }
-
-    // ✅ FIXED: typed id
+    }
     const alreadyApplied = job.applicants.some(
       (applicantId: Types.ObjectId) =>
         applicantId.toString() === user._id.toString()

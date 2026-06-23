@@ -41,9 +41,7 @@ export default function RegisterPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [universities, setUniversities] = useState<University[]>([]);
-  const [loadingUniversities, setLoadingUniversities] = useState(true);
-
-  // Fetch universities on component mount
+  const [loadingUniversities, setLoadingUniversities] = useState(true);
   useEffect(() => {
     const fetchUniversities = async () => {
       try {
@@ -64,8 +62,7 @@ export default function RegisterPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
+    setFormData(prev => ({ ...prev, [name]: value }));
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -115,9 +112,7 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateStep2()) return;
-
-    // Validate documents
+    if (!validateStep2()) return;
     if (formData.documents.length === 0) {
       setErrors({ documents: 'At least one verification document is required' });
       setStep(3);
@@ -135,9 +130,7 @@ export default function RegisterPage() {
       formDataToSend.append('department', formData.department);
       formDataToSend.append('batch', formData.batch);
       formDataToSend.append('role', formData.role);
-      formDataToSend.append('userType', formData.role === UserRole.STUDENT ? 'student' : 'alumni');
-
-      // Add documents
+      formDataToSend.append('userType', formData.role === UserRole.STUDENT ? 'student' : 'alumni');
       formData.documents.forEach((doc) => {
         formDataToSend.append('documents', doc);
       });

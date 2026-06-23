@@ -5,10 +5,7 @@ import { getUserFromRequest } from '@/lib/auth';
 import { ConnectionStatus } from '@/models/Connection';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 
-/**
- * DELETE /api/connections/[id]
- * Withdraw pending request or disconnect accepted connection
- */
+
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -26,9 +23,7 @@ export async function DELETE(
     const connection = await Connection.findById(id);
     if (!connection) {
       return errorResponse('Connection not found', 404);
-    }
-
-    // Check if user is part of this connection
+    }
     const isRequester = connection.requester.toString() === user._id.toString();
     const isRecipient = connection.recipient.toString() === user._id.toString();
 
@@ -38,15 +33,13 @@ export async function DELETE(
 
     let action = '';
 
-    if (connection.status === ConnectionStatus.PENDING) {
-      // Only requester can withdraw pending request
+    if (connection.status === ConnectionStatus.PENDING) {
       if (!isRequester) {
         return errorResponse('Only the requester can withdraw a pending request', 403);
       }
       connection.status = ConnectionStatus.WITHDRAWN;
       action = 'withdrawn';
-    } else if (connection.status === ConnectionStatus.ACCEPTED) {
-      // Either party can disconnect
+    } else if (connection.status === ConnectionStatus.ACCEPTED) {
       connection.status = ConnectionStatus.WITHDRAWN;
       action = 'disconnected';
     } else {

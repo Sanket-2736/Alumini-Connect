@@ -140,7 +140,7 @@ export default function GroupSettingsPanel({
 
   return (
     <div className="w-72 border-l border-gray-200 bg-white flex flex-col overflow-y-auto flex-shrink-0">
-      {/* Header */}
+      {}
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
         <h3 className="text-sm font-semibold text-gray-900">Group Info</h3>
         <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
@@ -151,7 +151,7 @@ export default function GroupSettingsPanel({
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        {/* Group info */}
+        {}
         <div className="p-4 border-b border-gray-100">
           <div className="flex flex-col items-center text-center mb-3">
             <GroupAvatar name={conversation.name || 'Group'} avatarUrl={conversation.groupAvatar} size="lg" className="mb-2 w-16 h-16 text-xl" />
@@ -194,7 +194,7 @@ export default function GroupSettingsPanel({
           </div>
         </div>
 
-        {/* Invite link */}
+        {}
         <div className="p-4 border-b border-gray-100">
           <p className="text-xs font-medium text-gray-700 mb-2">Invite Link</p>
           <div className="flex items-center space-x-2">
@@ -217,13 +217,13 @@ export default function GroupSettingsPanel({
           )}
         </div>
 
-        {/* Members */}
+        {}
         <div className="p-4">
           <div className="flex items-center justify-between mb-2">
             <p className="text-xs font-medium text-gray-700">{members.length} Members</p>
           </div>
 
-          {/* Add member search (admin only) */}
+          {}
           {isAdmin && (
             <div className="mb-3">
               <div className="relative">
@@ -251,7 +251,7 @@ export default function GroupSettingsPanel({
             </div>
           )}
 
-          {/* Member list */}
+          {}
           {loadingMembers ? (
             <div className="flex justify-center py-4">
               <svg className="w-4 h-4 text-gray-400 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -305,7 +305,7 @@ export default function GroupSettingsPanel({
         </div>
       </div>
 
-      {/* Leave group */}
+      {}
       <div className="p-4 border-t border-gray-100">
         <button
           onClick={() => handleRemoveMember(currentUserId)}

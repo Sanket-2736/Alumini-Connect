@@ -148,22 +148,22 @@ export default function VerificationsPage() {
               className="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden cursor-pointer"
               onClick={() => setSelectedUser(verification)}
             >
-              {/* Card Header */}
+              {}
               <div className="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-4 text-white">
                 <h3 className="text-lg font-semibold truncate">{verification.fullName}</h3>
                 <p className="text-blue-100 text-sm">{verification.email}</p>
               </div>
 
-              {/* Card Content */}
+              {}
               <div className="px-6 py-4">
                 <div className="space-y-3 mb-4">
-                  {/* University */}
+                  {}
                   <div>
                     <p className="text-xs text-gray-600 mb-1">University</p>
                     <p className="text-sm font-medium text-gray-900">{verification.university}</p>
                   </div>
 
-                  {/* Department & Batch */}
+                  {}
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <p className="text-xs text-gray-600 mb-1">Department</p>
@@ -175,13 +175,13 @@ export default function VerificationsPage() {
                     </div>
                   </div>
 
-                  {/* Role */}
+                  {}
                   <div>
                     <p className="text-xs text-gray-600 mb-1">Role</p>
                     <p className="text-sm font-medium text-gray-900 capitalize">{verification.role}</p>
                   </div>
 
-                  {/* Status */}
+                  {}
                   <div className="pt-2 border-t border-gray-200">
                     <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
                       verification.verificationStatus === 'pending'
@@ -196,7 +196,7 @@ export default function VerificationsPage() {
                     </span>
                   </div>
 
-                  {/* Submitted Date */}
+                  {}
                   <div className="pt-2 border-t border-gray-200">
                     <p className="text-xs text-gray-600">Submitted</p>
                     <p className="text-sm font-medium text-gray-900">
@@ -204,7 +204,7 @@ export default function VerificationsPage() {
                     </p>
                   </div>
 
-                  {/* Documents Count */}
+                  {}
                   <div className="pt-2 border-t border-gray-200">
                     <p className="text-xs text-gray-600">Documents</p>
                     <p className="text-sm font-medium text-gray-900">
@@ -213,7 +213,7 @@ export default function VerificationsPage() {
                   </div>
                 </div>
 
-                {/* Review Button */}
+                {}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -229,7 +229,7 @@ export default function VerificationsPage() {
         </div>
       )}
 
-      {/* Modal for reviewing documents */}
+      {}
       {selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
@@ -249,7 +249,7 @@ export default function VerificationsPage() {
                 </button>
               </div>
 
-              {/* User Details */}
+              {}
               <div className="mb-6 p-4 bg-gray-50 rounded-lg">
                 <h3 className="font-semibold text-gray-900 mb-3">User Details</h3>
                 <div className="grid grid-cols-2 gap-4">
@@ -282,7 +282,7 @@ export default function VerificationsPage() {
                 </div>
               </div>
 
-              {/* Documents */}
+              {}
               <div className="mb-6">
                 <h3 className="font-semibold text-gray-900 mb-3">Verification Documents</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -329,7 +329,7 @@ export default function VerificationsPage() {
                 </div>
               )}
 
-              {/* Action Buttons */}
+              {}
               {selectedUser.verificationStatus === 'pending' && (
                 <div className="flex gap-3">
                   <button

@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth';
 import connectDB from '@/lib/mongodb';
-import Notification from '@/models/Notification';
-
-// GET /api/notifications
+import Notification from '@/models/Notification';
 export async function GET(request: NextRequest) {
   try {
     await connectDB();

@@ -2,19 +2,14 @@ import { NextRequest } from 'next/server';
 import { v2 as cloudinary } from 'cloudinary';
 import connectToDatabase from '@/lib/db';
 import User from '@/models/User';
-import { successResponse, errorResponse } from '@/lib/apiResponse';
-
-// Configure Cloudinary
+import { successResponse, errorResponse } from '@/lib/apiResponse';
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-/**
- * POST /api/user/me/avatar
- * Upload user avatar to Cloudinary
- */
+
 export async function POST(request: NextRequest) {
   try {
     const userId = request.headers.get('x-user-id');
@@ -27,14 +22,10 @@ export async function POST(request: NextRequest) {
 
     if (!file) {
       return errorResponse('No file uploaded', 400);
-    }
-
-    // Validate file type
+    }
     if (!file.type.startsWith('image/')) {
       return errorResponse('Only image files are allowed', 400);
-    }
-
-    // Validate file size (max 5MB)
+    }
     if (file.size > 5 * 1024 * 1024) {
       return errorResponse('File size must be less than 5MB', 400);
     }
@@ -44,13 +35,9 @@ export async function POST(request: NextRequest) {
     const user = await User.findById(userId);
     if (!user) {
       return errorResponse('User not found', 404);
-    }
-
-    // Convert file to buffer
+    }
     const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    // Upload to Cloudinary
+    const buffer = Buffer.from(bytes);
     const uploadResult = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
@@ -68,9 +55,7 @@ export async function POST(request: NextRequest) {
       );
 
       uploadStream.end(buffer);
-    });
-
-    // Update user's profile picture
+    });
     user.profilePicture = (uploadResult as any).secure_url;
     await user.save();
 

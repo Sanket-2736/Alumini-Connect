@@ -7,41 +7,25 @@ import { verifyPasswordResetToken } from '@/lib/jwt';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 import { resetPasswordSchema } from '@/lib/validations';
 
-/**
- * POST /api/auth/reset-password
- * Reset user password using token
- */
-export async function POST(request: NextRequest) {
-  try {
-    // Parse and validate request body
-    const body = await request.json();
-    const { token, password } = resetPasswordSchema.parse(body);
 
-    // Verify token
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { token, password } = resetPasswordSchema.parse(body);
     const userId = verifyPasswordResetToken(token);
     if (!userId) {
       return errorResponse('Invalid or expired reset token', 400);
-    }
-
-    // Connect to database
-    await connectToDatabase();
-
-    // Find user
+    }
+    await connectToDatabase();
     const user = await User.findById(userId);
     if (!user) {
       return errorResponse('User not found', 404);
-    }
-
-    // Check if token matches and hasn't expired
+    }
     if (user.passwordResetToken !== token || !user.passwordResetExpiry || user.passwordResetExpiry < new Date()) {
       return errorResponse('Invalid or expired reset token', 400);
-    }
-
-    // Hash new password
+    }
     const saltRounds = 12;
-    const passwordHash = await bcrypt.hash(password, saltRounds);
-
-    // Update user
+    const passwordHash = await bcrypt.hash(password, saltRounds);
     user.passwordHash = passwordHash;
     user.passwordResetToken = undefined;
     user.passwordResetExpiry = undefined;

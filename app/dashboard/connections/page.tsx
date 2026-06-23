@@ -55,14 +55,10 @@ export default function ConnectionsPage() {
       const params = status ? `?status=${status}` : '';
       const response = await fetch(`/api/connections/my${params}`);
       if (response.ok) {
-        const data = await response.json();
-        
-        // Handle both wrapped (with success) and unwrapped responses
+        const data = await response.json();
         const connections = data.data?.connections || data.connections || [];
         
-        setConnections(connections);
-
-        // Count pending received requests
+        setConnections(connections);
         if (!status) {
           const pendingReceived = connections.filter(
             (conn: Connection) => conn.status === 'pending' && !conn.isRequester
@@ -210,7 +206,7 @@ export default function ConnectionsPage() {
         <h1 className="text-3xl font-bold text-gray-900">Connections</h1>
       </div>
 
-      {/* Tabs */}
+      {}
       <div className="mb-6">
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex space-x-8">
@@ -253,7 +249,7 @@ export default function ConnectionsPage() {
         </div>
       </div>
 
-      {/* Content */}
+      {}
       <div className="space-y-4">
         {loading ? (
           <div className="text-center py-8">

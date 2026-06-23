@@ -3,9 +3,7 @@ import Notification, { NotificationType } from '@/models/Notification';
 import User from '@/models/User';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const resend = new Resend(process.env.RESEND_API_KEY);
 const getSocketIO = (): any => (global as any)._socketIO;
 
 export interface CreateNotificationParams {
@@ -19,15 +17,11 @@ export interface CreateNotificationParams {
   entityModel?: string;
 }
 
-/**
- * Create a notification, emit it via Socket.io, and optionally send an email.
- */
+
 export async function createNotification(params: CreateNotificationParams) {
   const { recipientId, type, actorId, title, body, link, entityId, entityModel } = params;
 
-  await connectToDatabase();
-
-  // Don't notify yourself
+  await connectToDatabase();
   if (actorId && actorId === recipientId) return null;
 
   const notification = await Notification.create({
@@ -40,19 +34,13 @@ export async function createNotification(params: CreateNotificationParams) {
     entityId: entityId || undefined,
     entityModel: entityModel || undefined,
     isRead: false,
-  });
-
-  // Populate actor for the socket payload
+  });
   await notification.populate('actor', 'fullName profilePicture');
 
-  const payload = notification.toObject();
-
-  // Emit via Socket.io if server is available
+  const payload = notification.toObject();
   if (getSocketIO()) {
     getSocketIO().to(`user:${recipientId}`).emit('notification:new', payload);
-  }
-
-  // Optionally send email
+  }
   try {
     const recipient = await User.findById(recipientId).select(
       'email fullName notificationPreferences'
@@ -107,8 +95,7 @@ export async function createNotification(params: CreateNotificationParams) {
         });
       }
     }
-  } catch (emailErr) {
-    // Email failure is non-fatal
+  } catch (emailErr) {
     console.error('Notification email failed:', emailErr);
   }
 

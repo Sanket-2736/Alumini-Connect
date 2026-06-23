@@ -35,14 +35,10 @@ export default function MessageInput({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const isTypingRef = useRef(false);
-  const emojiPickerRef = useRef<HTMLDivElement>(null);
-
-  // Focus textarea when reply changes
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (replyTo) textareaRef.current?.focus();
-  }, [replyTo]);
-
-  // Close emoji picker on outside click
+  }, [replyTo]);
   useEffect(() => {
     if (!showEmojiPicker) return;
     const handler = (e: MouseEvent) => {
@@ -52,9 +48,7 @@ export default function MessageInput({
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
-  }, [showEmojiPicker]);
-
-  // ESC cancels reply
+  }, [showEmojiPicker]);
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && replyTo) onCancelReply();
@@ -73,9 +67,7 @@ export default function MessageInput({
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value;
     setContent(val);
-    resizeTextarea();
-
-    // Typing indicator logic
+    resizeTextarea();
     if (val && !isTypingRef.current) {
       isTypingRef.current = true;
       onTypingStart();
@@ -108,16 +100,12 @@ export default function MessageInput({
     onSendMessage(trimmed, attachments, replyTo?._id);
     setContent('');
     setAttachments([]);
-    onCancelReply();
-
-    // Stop typing indicator
+    onCancelReply();
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     if (isTypingRef.current) {
       isTypingRef.current = false;
       onTypingStop();
-    }
-
-    // Reset textarea
+    }
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
     }
@@ -165,8 +153,7 @@ export default function MessageInput({
     const end = el.selectionEnd;
     const newVal = content.slice(0, start) + emoji + content.slice(end);
     setContent(newVal);
-    setShowEmojiPicker(false);
-    // Restore cursor position after state update
+    setShowEmojiPicker(false);
     requestAnimationFrame(() => {
       el.focus();
       el.setSelectionRange(start + emoji.length, start + emoji.length);
@@ -178,7 +165,7 @@ export default function MessageInput({
 
   return (
     <div className="border-t border-gray-200 bg-white">
-      {/* Reply bar */}
+      {}
       {replyTo && (
         <div className="flex items-center justify-between px-4 py-2 bg-indigo-50 border-b border-indigo-100">
           <div className="flex items-center space-x-2 min-w-0">
@@ -204,7 +191,7 @@ export default function MessageInput({
         </div>
       )}
 
-      {/* Attachment previews */}
+      {}
       {attachments.length > 0 && (
         <div className="flex flex-wrap gap-2 px-4 pt-3">
           {attachments.map((att, i) => (
@@ -241,14 +228,14 @@ export default function MessageInput({
         </div>
       )}
 
-      {/* Upload error */}
+      {}
       {uploadError && (
         <p className="px-4 pt-2 text-xs text-red-500">{uploadError}</p>
       )}
 
-      {/* Input row */}
+      {}
       <div className="flex items-end space-x-2 px-4 py-3">
-        {/* Attachment button */}
+        {}
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading || disabled}
@@ -270,7 +257,7 @@ export default function MessageInput({
           className="hidden"
         />
 
-        {/* Textarea */}
+        {}
         <div className="flex-1 relative">
           <textarea
             ref={textareaRef}
@@ -284,7 +271,7 @@ export default function MessageInput({
             style={{ minHeight: '40px', maxHeight: '96px' }}
           />
 
-          {/* Emoji button inside textarea */}
+          {}
           <div className="absolute right-2 bottom-2" ref={emojiPickerRef}>
             <button
               onClick={() => setShowEmojiPicker((v) => !v)}
@@ -317,7 +304,7 @@ export default function MessageInput({
           </div>
         </div>
 
-        {/* Send button */}
+        {}
         <button
           onClick={handleSend}
           disabled={!canSend}

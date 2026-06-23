@@ -3,10 +3,7 @@ import connectToDatabase from '@/lib/db';
 import University from '@/models/University';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 
-/**
- * GET /api/universities
- * Fetch all active universities
- */
+
 export async function GET(request: NextRequest) {
   try {
     await connectToDatabase();

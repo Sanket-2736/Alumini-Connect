@@ -21,9 +21,7 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
 
-    const skip = (page - 1) * limit;
-
-    // Build filter query
+    const skip = (page - 1) * limit;
     const filter: any = {
       status: JobStatus.ACTIVE,
       expiresAt: { $gt: new Date() }
@@ -36,14 +34,10 @@ export async function GET(request: NextRequest) {
     if (university) filter.university = university;
     if (skills && skills.length > 0) {
       filter.skills = { $in: skills };
-    }
-
-    // Text search if q is provided
+    }
     if (q) {
       filter.$text = { $search: q };
-    }
-
-    // Build query
+    }
     let query = Job.find(filter)
       .populate('postedBy', 'fullName profilePicture company university')
       .populate('university', 'name')
@@ -56,9 +50,7 @@ export async function GET(request: NextRequest) {
     }
 
     const jobs = await query.lean();
-    const totalCount = await Job.countDocuments(filter);
-
-    // Format response and add user-specific fields
+    const totalCount = await Job.countDocuments(filter);
     const formattedJobs = jobs.map(job => ({
       _id: job._id,
       title: job.title,
@@ -106,9 +98,7 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Check if user is verified alumni or admin
+    }
     const userDoc = await User.findById(user._id);
     if (userDoc?.verificationStatus !== 'approved' && userDoc?.role !== 'admin') {
       return NextResponse.json({ error: 'Only verified alumni or admins can post jobs' }, { status: 403 });
@@ -129,23 +119,17 @@ export async function POST(request: NextRequest) {
       salary,
       skills,
       deadline
-    } = await request.json();
-
-    // Validate required fields
+    } = await request.json();
     if (!title || !company || !type || !description) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-    }
-
-    // Validate applyLink URL if provided
+    }
     if (applyLink) {
       try {
         new URL(applyLink);
       } catch {
         return NextResponse.json({ error: 'Invalid apply link URL' }, { status: 400 });
       }
-    }
-
-    // Create job
+    }
     const job = new Job({
       postedBy: user._id,
       title,
@@ -164,9 +148,7 @@ export async function POST(request: NextRequest) {
       deadline
     });
 
-    await job.save();
-
-    // Create notifications for connected users (batch in groups of 50)
+    await job.save();
     try {
       const connections = await (require('@/models/Connection')).default
         .find({
@@ -185,9 +167,7 @@ export async function POST(request: NextRequest) {
         if (conn.recipient.toString() !== user._id.toString()) {
           connectedUserIds.add(conn.recipient);
         }
-      });
-
-      // TODO: Create notifications in batches of 50
+      });
     } catch (error) {
       console.error('Error creating job notifications:', error);
     }

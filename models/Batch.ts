@@ -38,9 +38,7 @@ const batchSchema = new Schema<IBatch>(
   {
     timestamps: true,
   }
-);
-
-// Indexes
+);
 batchSchema.index({ university: 1, department: 1, year: 1 }, { unique: true });
 
 const Batch = mongoose.models.Batch || mongoose.model<IBatch>('Batch', batchSchema);

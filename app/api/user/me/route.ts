@@ -5,10 +5,7 @@ import User from '@/models/User';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 import { updateProfileSchema } from '@/lib/validations';
 
-/**
- * GET /api/user/me
- * Get current user's profile
- */
+
 export async function GET(request: NextRequest) {
   try {
     const userId = request.headers.get('x-user-id');
@@ -21,9 +18,7 @@ export async function GET(request: NextRequest) {
     const user = await User.findById(userId);
     if (!user) {
       return errorResponse('User not found', 404);
-    }
-
-    // Return user profile without sensitive data
+    }
     const profile = {
       id: user._id,
       fullName: user.fullName,
@@ -49,10 +44,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/**
- * PUT /api/user/me
- * Update current user's profile
- */
+
 export async function PUT(request: NextRequest) {
   try {
     const userId = request.headers.get('x-user-id');
@@ -68,9 +60,7 @@ export async function PUT(request: NextRequest) {
     const user = await User.findById(userId);
     if (!user) {
       return errorResponse('User not found', 404);
-    }
-
-    // Update allowed fields
+    }
     if (validatedData.fullName !== undefined) user.fullName = validatedData.fullName;
     if (validatedData.bio !== undefined) user.bio = validatedData.bio;
     if (validatedData.workDetails !== undefined) user.workDetails = validatedData.workDetails;

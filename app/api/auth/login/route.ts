@@ -7,26 +7,16 @@ import { generateAccessToken, generateRefreshToken } from '@/lib/jwt';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 import { loginSchema } from '@/lib/validations';
 
-/**
- * POST /api/auth/login
- * Authenticate user and return tokens
- */
+
 export async function POST(request: NextRequest) {
-  try {
-    // Parse and validate request body
+  try {
     const body = await request.json();
-    const { email, password } = loginSchema.parse(body);
-
-    // Connect to database
-    await connectToDatabase();
-
-    // Find user
+    const { email, password } = loginSchema.parse(body);
+    await connectToDatabase();
     const user = await User.findOne({ email }).select('+passwordHash');
     if (!user) {
       return errorResponse('Invalid email or password', 401);
-    }
-
-    // Check if user is verified by admin
+    }
     if (user.verificationStatus !== 'approved') {
       if (user.verificationStatus === 'pending') {
         return errorResponse('Your account is pending admin verification. Please wait.', 401);
@@ -35,20 +25,14 @@ export async function POST(request: NextRequest) {
       } else {
         return errorResponse('Please upload your verification documents to complete registration', 401);
       }
-    }
-
-    // Check if user is banned
+    }
     if (user.isBanned) {
       return errorResponse('Your account has been banned', 403);
-    }
-
-    // Verify password
+    }
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) {
       return errorResponse('Invalid email or password', 401);
-    }
-
-    // Generate tokens
+    }
     const payload = {
       userId: user._id.toString(),
       email: user.email,
@@ -56,14 +40,10 @@ export async function POST(request: NextRequest) {
     };
 
     const accessToken = generateAccessToken(payload);
-    const refreshToken = generateRefreshToken(payload);
-
-    // Hash refresh token and store in user's refreshTokens
+    const refreshToken = generateRefreshToken(payload);
     const hashedRefreshToken = await bcrypt.hash(refreshToken, 12);
     user.refreshTokens.push(hashedRefreshToken);
-    await user.save();
-
-    // Create response with refresh token in HttpOnly cookie
+    await user.save();
     const response = successResponse({
       accessToken,
       user: {
@@ -74,9 +54,7 @@ export async function POST(request: NextRequest) {
         profilePicture: user.profilePicture,
         verificationStatus: user.verificationStatus,
       },
-    });
-
-    // Set refresh token cookie
+    });
     response.cookies.set('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

@@ -31,26 +31,20 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const content = formData.get('content') as string;
     const type = formData.get('type') as PostType || PostType.POST;
-    const tags = formData.getAll('tags') as string[];
-
-    // Validate content
+    const tags = formData.getAll('tags') as string[];
     if (!content || content.trim().length === 0) {
       return NextResponse.json({ error: 'Content is required' }, { status: 400 });
     }
 
     if (content.length > 2000) {
       return NextResponse.json({ error: 'Content exceeds 2000 characters' }, { status: 400 });
-    }
-
-    // Check permission for announcement type
+    }
     if (type === PostType.ANNOUNCEMENT) {
       const userDoc = await User.findById(user._id);
       if (userDoc?.role !== 'admin' && userDoc?.role !== 'moderator') {
         return NextResponse.json({ error: 'Only admins/moderators can create announcements' }, { status: 403 });
       }
-    }
-
-    // Create post first to get ID
+    }
     const post = new Post({
       author: user._id,
       content: content.trim(),
@@ -59,9 +53,7 @@ export async function POST(request: NextRequest) {
       images: []
     });
 
-    await post.save();
-
-    // Upload images
+    await post.save();
     const imageUrls: string[] = [];
     const files = formData.getAll('images') as File[];
 
@@ -88,40 +80,27 @@ export async function POST(request: NextRequest) {
       } catch (error) {
         console.error('Error uploading image:', error);
       }
-    }
-
-    // Update post with image URLs
+    }
     if (imageUrls.length > 0) {
       post.images = imageUrls;
       await post.save();
-    }
-
-    // Populate author for response
-    await post.populate('author', 'fullName profilePicture university verificationStatus');
-
-    // Send notifications to connected students if author is alumni
+    }
+    await post.populate('author', 'fullName profilePicture university verificationStatus');
     if (user.role === 'alumni') {
-      try {
-        // Find all accepted connections where this user is the requester or recipient
+      try {
         const connections = await Connection.find({
           $or: [
             { requester: user._id, status: ConnectionStatus.ACCEPTED },
             { recipient: user._id, status: ConnectionStatus.ACCEPTED },
           ],
-        }).select('requester recipient');
-
-        // Get all connected user IDs
+        }).select('requester recipient');
         const connectedUserIds = connections.map(conn => 
           conn.requester.toString() === user._id.toString() ? conn.recipient : conn.requester
-        );
-
-        // Get all connected users to check if they are students
+        );
         const connectedUsers = await User.find({
           _id: { $in: connectedUserIds },
           role: 'student',
-        }).select('_id');
-
-        // Create notifications for all connected students
+        }).select('_id');
         const notifications = connectedUsers.map(connectedUser => ({
           recipient: connectedUser._id,
           type: NotificationType.POST_CREATED,
@@ -137,8 +116,7 @@ export async function POST(request: NextRequest) {
           await Notification.insertMany(notifications);
         }
       } catch (error) {
-        console.error('Error sending notifications:', error);
-        // Don't fail the post creation if notifications fail
+        console.error('Error sending notifications:', error);
       }
     }
 

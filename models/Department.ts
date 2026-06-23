@@ -31,9 +31,7 @@ const departmentSchema = new Schema<IDepartment>(
   {
     timestamps: true,
   }
-);
-
-// Indexes
+);
 departmentSchema.index({ university: 1, name: 1 }, { unique: true });
 departmentSchema.index({ isActive: 1 });
 

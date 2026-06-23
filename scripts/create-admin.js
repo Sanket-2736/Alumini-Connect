@@ -1,13 +1,8 @@
-/**
- * Script to create an admin user
- * Usage: node scripts/create-admin.js
- */
+
 
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-require('dotenv').config();
-
-// User Schema (simplified for this script)
+require('dotenv').config();
 const userSchema = new mongoose.Schema({
   fullName: String,
   email: { type: String, unique: true },
@@ -33,17 +28,12 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 
 async function createAdmin() {
-  try {
-    // Connect to MongoDB
+  try {
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log('✅ Connected to MongoDB');
-
-    // Admin credentials
+    console.log('✅ Connected to MongoDB');
     const adminEmail = 'admin@example.com';
     const adminPassword = 'Admin@12345';
-    const adminName = 'Admin User';
-
-    // Check if admin already exists
+    const adminName = 'Admin User';
     const existingAdmin = await User.findOne({ email: adminEmail });
     if (existingAdmin) {
       console.log('⚠️  Admin user already exists!');
@@ -51,13 +41,9 @@ async function createAdmin() {
       console.log(`Role: ${existingAdmin.role}`);
       await mongoose.connection.close();
       return;
-    }
-
-    // Hash password
+    }
     const saltRounds = 12;
-    const passwordHash = await bcrypt.hash(adminPassword, saltRounds);
-
-    // Create admin user
+    const passwordHash = await bcrypt.hash(adminPassword, saltRounds);
     const admin = new User({
       fullName: adminName,
       email: adminEmail,

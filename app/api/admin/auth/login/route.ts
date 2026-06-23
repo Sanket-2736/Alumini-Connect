@@ -4,24 +4,16 @@ import { errorResponse, successResponse } from '@/lib/apiResponse';
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json();
-
-    // Validate input
+    const { email, password } = await request.json();
     if (!email || !password) {
       return errorResponse('Email and password are required', 400);
-    }
-
-    // Get admin credentials from environment
+    }
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com';
-    const adminPassword = process.env.ADMIN_PASSWORD || 'Admin@12345';
-
-    // Verify credentials
+    const adminPassword = process.env.ADMIN_PASSWORD || 'Admin@12345';
     if (email !== adminEmail || password !== adminPassword) {
       console.error('❌ Invalid admin credentials');
       return errorResponse('Invalid email or password', 401);
-    }
-
-    // Generate JWT token
+    }
     const token = generateAccessToken({
       userId: 'admin',
       email: adminEmail,

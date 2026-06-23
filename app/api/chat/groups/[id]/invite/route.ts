@@ -5,9 +5,7 @@ import Conversation from '@/models/Conversation';
 import { nanoid } from 'nanoid';
 import mongoose from 'mongoose';
 
-type Params = { params: Promise<{ id: string }> };
-
-// GET /api/chat/groups/[id]/invite — get invite link
+type Params = { params: Promise<{ id: string }> };
 export async function GET(request: NextRequest, { params }: Params) {
   try {
     await connectDB();
@@ -28,9 +26,7 @@ export async function GET(request: NextRequest, { params }: Params) {
     console.error('Get invite error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
-
-// POST /api/chat/groups/[id]/invite — regenerate invite link (admin only)
+}
 export async function POST(request: NextRequest, { params }: Params) {
   try {
     await connectDB();

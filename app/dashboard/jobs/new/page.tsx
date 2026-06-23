@@ -93,7 +93,7 @@ export default function JobPostingPage() {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-4xl font-bold mb-8">Post a Job</h1>
 
-        {/* Progress Indicator */}
+        {}
         <div className="flex gap-2 mb-8">
           {[1, 2, 3, 4].map(s => (
             <button
@@ -111,7 +111,7 @@ export default function JobPostingPage() {
         </div>
 
         <div className="bg-white rounded-lg shadow-sm p-8 space-y-6">
-          {/* Step 1: Basic Info */}
+          {}
           {step === 1 && (
             <>
               <div>
@@ -189,7 +189,7 @@ export default function JobPostingPage() {
             </>
           )}
 
-          {/* Step 2: Description */}
+          {}
           {step === 2 && (
             <>
               <div>
@@ -240,7 +240,7 @@ export default function JobPostingPage() {
             </>
           )}
 
-          {/* Step 3: Details */}
+          {}
           {step === 3 && (
             <>
               <div>
@@ -338,7 +338,7 @@ export default function JobPostingPage() {
             </>
           )}
 
-          {/* Step 4: Review */}
+          {}
           {step === 4 && (
             <>
               <div className="space-y-4">
@@ -366,7 +366,7 @@ export default function JobPostingPage() {
             </>
           )}
 
-          {/* Navigation */}
+          {}
           <div className="flex gap-3 pt-6 border-t">
             {step > 1 && (
               <button

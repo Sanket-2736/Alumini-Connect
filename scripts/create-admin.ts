@@ -1,34 +1,24 @@
-/**
- * Script to create an admin user
- * Usage: npx ts-node scripts/create-admin.ts
- */
+
 
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 
-dotenv.config();
-
-// Import User model
+dotenv.config();
 import User from '../models/User';
 
 async function createAdmin() {
-  try {
-    // Connect to MongoDB
+  try {
     const mongoUri = process.env.MONGODB_URI;
     if (!mongoUri) {
       throw new Error('MONGODB_URI not found in .env');
     }
 
     await mongoose.connect(mongoUri);
-    console.log('✅ Connected to MongoDB');
-
-    // Admin credentials
+    console.log('✅ Connected to MongoDB');
     const adminEmail = 'admin@example.com';
     const adminPassword = 'Admin@12345';
-    const adminName = 'Admin User';
-
-    // Check if admin already exists
+    const adminName = 'Admin User';
     const existingAdmin = await User.findOne({ email: adminEmail });
     if (existingAdmin) {
       console.log('⚠️  Admin user already exists!');
@@ -36,16 +26,10 @@ async function createAdmin() {
       console.log(`Role: ${existingAdmin.role}`);
       await mongoose.connection.close();
       return;
-    }
-
-    // Hash password
+    }
     const saltRounds = 12;
-    const passwordHash = await bcrypt.hash(adminPassword, saltRounds);
-
-    // Create a dummy university ID (you can update this later)
-    const dummyUniversityId = new mongoose.Types.ObjectId();
-
-    // Create admin user
+    const passwordHash = await bcrypt.hash(adminPassword, saltRounds);
+    const dummyUniversityId = new mongoose.Types.ObjectId();
     const admin = new User({
       fullName: adminName,
       email: adminEmail,

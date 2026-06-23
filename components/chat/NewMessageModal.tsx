@@ -23,14 +23,10 @@ export default function NewMessageModal({ onClose, onConversationCreated }: NewM
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-
-  // Focus input on mount
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => {
     inputRef.current?.focus();
-  }, []);
-
-  // Close on Escape
+  }, []);
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -97,7 +93,7 @@ export default function NewMessageModal({ onClose, onConversationCreated }: NewM
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900">New Message</h2>
           <button
@@ -111,7 +107,7 @@ export default function NewMessageModal({ onClose, onConversationCreated }: NewM
           </button>
         </div>
 
-        {/* Search input */}
+        {}
         <div className="px-5 py-3 border-b border-gray-100">
           <div className="relative">
             <svg
@@ -143,12 +139,12 @@ export default function NewMessageModal({ onClose, onConversationCreated }: NewM
           </div>
         </div>
 
-        {/* Error */}
+        {}
         {error && (
           <div className="px-5 py-2 bg-red-50 text-red-600 text-sm">{error}</div>
         )}
 
-        {/* Results */}
+        {}
         <div className="max-h-72 overflow-y-auto">
           {results.length === 0 && query && !loading ? (
             <div className="px-5 py-8 text-center text-gray-500 text-sm">

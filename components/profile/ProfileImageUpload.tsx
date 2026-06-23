@@ -41,25 +41,19 @@ export default function ProfileImageUpload({
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Validate file
+    if (!file) return;
     const validationError = validateFile(file);
     if (validationError) {
       setError(validationError);
       setPreviewImage(null);
       onUploadError?.(validationError);
       return;
-    }
-
-    // Create preview
+    }
     const reader = new FileReader();
     reader.onload = () => {
       setPreviewImage(reader.result as string);
     };
-    reader.readAsDataURL(file);
-
-    // Upload file
+    reader.readAsDataURL(file);
     await uploadImage(file);
   };
 
@@ -106,7 +100,7 @@ export default function ProfileImageUpload({
 
   return (
     <div className="space-y-3">
-      {/* Image Preview */}
+      {}
       <div className="relative inline-block">
         <img
           src={previewImage || currentImage || '/default-avatar.svg'}
@@ -116,7 +110,7 @@ export default function ProfileImageUpload({
           }`}
         />
 
-        {/* Upload Button Overlay */}
+        {}
         <label
           className={`absolute bottom-0 right-0 p-2 rounded-full text-white transition-all cursor-pointer shadow-lg ${
             disabled || isUploading
@@ -126,46 +120,7 @@ export default function ProfileImageUpload({
         >
           <input
             type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            disabled={disabled || isUploading}
-            className="hidden"
-          />
-          {isUploading ? (
-            <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v8H4z"
-              />
-            </svg>
-          ) : (
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-          )}
-        </label>
-      </div>
-
-      {/* Upload Progress Bar */}
+            accept="image}
       {isUploading && uploadProgress > 0 && (
         <div className="w-full bg-gray-200 rounded-full h-2">
           <div
@@ -175,7 +130,7 @@ export default function ProfileImageUpload({
         </div>
       )}
 
-      {/* Status Messages */}
+      {}
       {error && (
         <div className="p-3 bg-red-50 border border-red-200 rounded-md">
           <p className="text-sm text-red-700 flex items-start gap-2">
@@ -220,7 +175,7 @@ export default function ProfileImageUpload({
         </div>
       )}
 
-      {/* Help Text */}
+      {}
       <p className="text-xs text-gray-500">
         Supported formats: JPEG, PNG, GIF, WebP (Max 5MB)
       </p>

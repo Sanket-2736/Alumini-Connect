@@ -8,13 +8,9 @@ import { successResponse, errorResponse } from '@/lib/apiResponse';
 import { createNotification } from '@/lib/services/notificationService';
 import { NotificationType } from '@/models/Notification';
 
-/**
- * POST /api/connections/request
- * Send connection request to another user
- */
+
 export async function POST(request: NextRequest) {
-  try {
-    // Get user ID from middleware headers
+  try {
     const userId = request.headers.get('x-user-id');
     if (!userId) {
       return errorResponse('Unauthorized', 401);
@@ -34,21 +30,15 @@ export async function POST(request: NextRequest) {
       return errorResponse('Invalid recipient ID', 400);
     }
 
-    await connectToDatabase();
-
-    // Get requester user
+    await connectToDatabase();
     const user = await User.findById(userId).select('_id fullName profilePicture');
     if (!user) {
       return errorResponse('User not found', 401);
-    }
-
-    // Check if recipient exists and is not banned
+    }
     const recipient = await User.findOne({ _id: recipientId, isBanned: false });
     if (!recipient) {
       return errorResponse('Recipient not found', 404);
-    }
-
-    // Check if connection already exists
+    }
     const existingConnection = await Connection.findOne({
       $or: [
         { requester: userId, recipient: recipientId },
@@ -67,18 +57,14 @@ export async function POST(request: NextRequest) {
           existingConnection.recipient.toString() === userId) {
         return errorResponse('Cannot send request to user who rejected you', 400);
       }
-    }
-
-    // Create new connection request
+    }
     const connection = new Connection({
       requester: userId,
       recipient: recipientId,
       status: ConnectionStatus.PENDING,
     });
 
-    await connection.save();
-
-    // Notify recipient
+    await connection.save();
     await createNotification({
       recipientId,
       type: NotificationType.CONNECTION_REQUEST,
@@ -88,9 +74,7 @@ export async function POST(request: NextRequest) {
       link: '/dashboard/connections',
       entityId: connection._id.toString(),
       entityModel: 'Connection',
-    });
-
-    // Populate user details for response
+    });
     await connection.populate([
       { path: 'requester', select: 'fullName profilePicture' },
       { path: 'recipient', select: 'fullName profilePicture' },

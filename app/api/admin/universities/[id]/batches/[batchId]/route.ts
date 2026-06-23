@@ -4,10 +4,7 @@ import Batch from '@/models/Batch';
 import { requireAdmin } from '@/lib/admin';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 
-/**
- * PUT /api/admin/universities/[id]/batches/[batchId]
- * Admin only - update batch
- */
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string; batchId: string }> }
@@ -80,10 +77,7 @@ export async function PUT(
   }
 }
 
-/**
- * DELETE /api/admin/universities/[id]/batches/[batchId]
- * Admin only - soft delete batch
- */
+
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string; batchId: string }> }

@@ -13,17 +13,11 @@ const io = socketIO(server, {
 });
 
 app.use(cors());
-app.use(express.json());
-
-// Store active rooms and their participants
-const rooms = new Map();
-
-// Health check endpoint
+app.use(express.json());
+const rooms = new Map();
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-
-// Room status endpoint
+});
 app.get('/room-status', (req, res) => {
   const { sessionId } = req.query;
   if (!sessionId) {
@@ -41,22 +35,16 @@ app.get('/room-status', (req, res) => {
       displayName: p.displayName,
     })) : [],
   });
-});
-
-// Socket.IO connection handling
+});
 io.on('connection', (socket) => {
-  console.log(`[Socket] User connected: ${socket.id}`);
-
-  // Join room
+  console.log(`[Socket] User connected: ${socket.id}`);
   socket.on('join-room', (data) => {
     const { sessionId, role, displayName, userId } = data;
 
     if (!sessionId || !role || !displayName) {
       socket.emit('error', { message: 'Missing required fields' });
       return;
-    }
-
-    // Create room if it doesn't exist
+    }
     if (!rooms.has(sessionId)) {
       rooms.set(sessionId, {
         participants: new Map(),
@@ -73,29 +61,21 @@ io.on('connection', (socket) => {
     });
 
     socket.join(sessionId);
-    console.log(`[Room] ${displayName} (${role}) joined ${sessionId}`);
-
-    // Notify others in room
+    console.log(`[Room] ${displayName} (${role}) joined ${sessionId}`);
     socket.to(sessionId).emit('user-joined', {
       userId: socket.id,
       role,
       displayName,
-    });
-
-    // Send current participants to the new user
+    });
     const participants = Array.from(room.participants.values());
-    socket.emit('room-participants', { participants });
-
-    // If both participants are present, notify initiator
+    socket.emit('room-participants', { participants });
     if (room.participants.size === 2) {
       io.to(sessionId).emit('ready-to-call', {
         message: 'Both participants are ready',
         participants: participants,
       });
     }
-  });
-
-  // Handle WebRTC offer
+  });
   socket.on('call-user', (data) => {
     const { to, offer, sessionId } = data;
     socket.to(sessionId).emit('call-received', {
@@ -103,9 +83,7 @@ io.on('connection', (socket) => {
       offer,
     });
     console.log(`[Call] Offer sent in room ${sessionId}`);
-  });
-
-  // Handle WebRTC answer
+  });
   socket.on('call-accepted', (data) => {
     const { to, answer, sessionId } = data;
     socket.to(sessionId).emit('call-answer', {
@@ -113,18 +91,14 @@ io.on('connection', (socket) => {
       answer,
     });
     console.log(`[Call] Answer sent in room ${sessionId}`);
-  });
-
-  // Handle ICE candidates
+  });
   socket.on('ice-candidate', (data) => {
     const { candidate, sessionId } = data;
     socket.to(sessionId).emit('ice-candidate', {
       from: socket.id,
       candidate,
     });
-  });
-
-  // Handle chat messages
+  });
   socket.on('chat-message', (data) => {
     const { sessionId, message, timestamp } = data;
     socket.to(sessionId).emit('chat-message', {
@@ -133,9 +107,7 @@ io.on('connection', (socket) => {
       timestamp,
     });
     console.log(`[Chat] Message in room ${sessionId}`);
-  });
-
-  // Handle call end
+  });
   socket.on('end-call', (data) => {
     const { sessionId } = data;
     socket.to(sessionId).emit('call-ended', {
@@ -143,25 +115,17 @@ io.on('connection', (socket) => {
       reason: data.reason || 'User ended the call',
     });
     console.log(`[Call] Ended in room ${sessionId}`);
-  });
-
-  // Handle disconnect
+  });
   socket.on('disconnect', () => {
-    console.log(`[Socket] User disconnected: ${socket.id}`);
-
-    // Find and clean up room
+    console.log(`[Socket] User disconnected: ${socket.id}`);
     for (const [sessionId, room] of rooms.entries()) {
       if (room.participants.has(socket.id)) {
         const participant = room.participants.get(socket.id);
-        room.participants.delete(socket.id);
-
-        // Notify others
+        room.participants.delete(socket.id);
         io.to(sessionId).emit('user-left', {
           userId: socket.id,
           displayName: participant.displayName,
-        });
-
-        // Clean up empty rooms after 5 minutes
+        });
         if (room.participants.size === 0) {
           setTimeout(() => {
             if (rooms.get(sessionId)?.participants.size === 0) {

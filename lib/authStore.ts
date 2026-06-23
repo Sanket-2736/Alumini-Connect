@@ -5,7 +5,7 @@ import axios, {
   InternalAxiosRequestConfig,
 } from 'axios';
 
-/* ================= TYPES ================= */
+
 
 interface User {
   _id: string;
@@ -32,7 +32,7 @@ interface RefreshResponse {
   };
 }
 
-/* ================= TOKEN QUEUE ================= */
+
 
 let isRefreshing = false;
 
@@ -50,7 +50,7 @@ const processQueue = (error: unknown) => {
   failedQueue = [];
 };
 
-/* ================= STORE ================= */
+
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -109,7 +109,7 @@ export const useAuthStore = create<AuthState>()(
   )
 );
 
-/* ================= AXIOS INTERCEPTOR ================= */
+
 
 axios.interceptors.response.use(
   (response) => response,
@@ -139,7 +139,7 @@ axios.interceptors.response.use(
   }
 );
 
-/* ================= INIT ================= */
+
 
 if (typeof window !== 'undefined') {
   const { accessToken } = useAuthStore.getState();

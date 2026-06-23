@@ -18,9 +18,7 @@ export default function CreatePostBox({ onPostCreated }: CreatePostBoxProps) {
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
   const [posting, setPosting] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Only alumni can create posts
+  const fileInputRef = useRef<HTMLInputElement>(null);
   if (user?.role !== UserRole.ALUMNI) {
     return (
       <div className="bg-white rounded-lg shadow-sm p-4">
@@ -95,8 +93,7 @@ export default function CreatePostBox({ onPostCreated }: CreatePostBoxProps) {
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-4">
-      {!isExpanded ? (
-        // Collapsed state
+      {!isExpanded ? (
         <div className="flex items-center gap-3">
           <img
             src={user?.profilePicture || '/default-avatar.png'}
@@ -110,10 +107,9 @@ export default function CreatePostBox({ onPostCreated }: CreatePostBoxProps) {
             Share something with alumni…
           </button>
         </div>
-      ) : (
-        // Expanded state
+      ) : (
         <div className="space-y-4">
-          {/* Header */}
+          {}
           <div className="flex items-center justify-between pb-4 border-b">
             <div className="flex items-center gap-3">
               <img
@@ -145,7 +141,7 @@ export default function CreatePostBox({ onPostCreated }: CreatePostBoxProps) {
             </button>
           </div>
 
-          {/* Content Textarea */}
+          {}
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
@@ -154,12 +150,12 @@ export default function CreatePostBox({ onPostCreated }: CreatePostBoxProps) {
             rows={4}
           />
 
-          {/* Character Counter */}
+          {}
           <div className="text-sm text-gray-500">
             {content.length}/2000
           </div>
 
-          {/* Image Preview */}
+          {}
           {images.length > 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {images.map((img, index) => (
@@ -192,7 +188,7 @@ export default function CreatePostBox({ onPostCreated }: CreatePostBoxProps) {
             </div>
           )}
 
-          {/* Image Upload Zone */}
+          {}
           {images.length === 0 && (
             <div
               onClick={() => fileInputRef.current?.click()}
@@ -210,12 +206,7 @@ export default function CreatePostBox({ onPostCreated }: CreatePostBoxProps) {
             ref={fileInputRef}
             type="file"
             multiple
-            accept="image/*"
-            onChange={handleImageSelect}
-            className="hidden"
-          />
-
-          {/* Tags */}
+            accept="image}
           <div className="space-y-2">
             <div className="flex gap-2">
               <input
@@ -249,7 +240,7 @@ export default function CreatePostBox({ onPostCreated }: CreatePostBoxProps) {
             )}
           </div>
 
-          {/* Action Buttons */}
+          {}
           <div className="flex gap-2 justify-end pt-4 border-t">
             <button
               onClick={() => setIsExpanded(false)}

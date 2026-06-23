@@ -5,15 +5,11 @@ import User from '@/models/User';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 import { requireAdmin } from '@/lib/admin';
 
-/**
- * GET /api/admin/users/[id]/documents
- * Get user's verification documents (visible to admin only)
- */
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
-  // Check admin access
+) {
   const adminCheck = requireAdmin(request);
   if (adminCheck) return adminCheck;
 

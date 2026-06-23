@@ -14,9 +14,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-type Params = { params: Promise<{ id: string }> };
-
-// GET /api/chat/groups/[id] — group info + paginated members
+type Params = { params: Promise<{ id: string }> };
 export async function GET(request: NextRequest, { params }: Params) {
   try {
     await connectDB();
@@ -62,9 +60,7 @@ export async function GET(request: NextRequest, { params }: Params) {
     console.error('Get group error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
-
-// PUT /api/chat/groups/[id] — update group (admin only)
+}
 export async function PUT(request: NextRequest, { params }: Params) {
   try {
     await connectDB();
@@ -118,9 +114,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
     console.error('Update group error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
-
-// DELETE /api/chat/groups/[id] — archive group (admin only)
+}
 export async function DELETE(request: NextRequest, { params }: Params) {
   try {
     await connectDB();

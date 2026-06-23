@@ -84,16 +84,11 @@ const universitySchema = new Schema<IUniversity>(
   {
     timestamps: true,
   }
-);
-
-// Indexes
+);
 universitySchema.index({ isActive: 1 });
 universitySchema.index({ name: 1 });
-universitySchema.index({ state: 1 });
-
-// Pre-save middleware to generate slug if not provided
-universitySchema.pre('save', function(this: IUniversity) {
-  // Only generate slug if it's not already set
+universitySchema.index({ state: 1 });
+universitySchema.pre('save', function(this: IUniversity) {
   if (!this.slug && this.isModified('name')) {
     this.slug = this.name
       .toLowerCase()

@@ -15,9 +15,7 @@ export async function GET(
     const user = await getUserFromRequest(request);
 
     const { id } = await context.params;
-const jobId = id;
-
-    // Get job and increment view count
+const jobId = id;
     const job = await Job.findByIdAndUpdate(
       jobId,
       { $inc: { viewCount: 1 } },
@@ -89,18 +87,14 @@ const jobId = id;
 
     if (!job) {
       return NextResponse.json({ error: 'Job not found' }, { status: 404 });
-    }
-
-    // Check authorization
+    }
     const isOwner = job.postedBy.toString() === user._id.toString();
     const userDoc = await User.findById(user._id);
     const isAdmin = userDoc?.role === 'admin';
 
     if (!isOwner && !isAdmin) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
-    }
-
-    // Cannot edit if applicants exist
+    }
     if (job.applicants.length > 0) {
       return NextResponse.json({ error: 'Cannot edit job after applicants have applied' }, { status: 403 });
     }
@@ -150,18 +144,14 @@ const jobId = id;
 
     if (!job) {
       return NextResponse.json({ error: 'Job not found' }, { status: 404 });
-    }
-
-    // Check authorization
+    }
     const isOwner = job.postedBy.toString() === user._id.toString();
     const userDoc = await User.findById(user._id);
     const isAdmin = userDoc?.role === 'admin';
 
     if (!isOwner && !isAdmin) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
-    }
-
-    // Soft delete by setting status to closed
+    }
     job.status = 'closed';
     await job.save();
 

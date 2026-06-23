@@ -1,8 +1,6 @@
 import mongoose from 'mongoose';
 
-/**
- * Global cache for MongoDB connection to avoid multiple connections in development
- */
+
 const globalWithMongoose = global as typeof global & {
   mongoose: {
     conn: typeof mongoose | null;
@@ -16,10 +14,7 @@ if (!MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
 }
 
-/**
- * Connect to MongoDB using Mongoose
- * Uses cached connection in development to prevent connection issues
- */
+
 async function connectToDatabase(): Promise<typeof mongoose> {
   if (globalWithMongoose.mongoose?.conn) {
     return globalWithMongoose.mongoose.conn;

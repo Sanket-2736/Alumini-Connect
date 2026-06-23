@@ -96,25 +96,19 @@ export default function ChatWindow({
   const prevScrollHeightRef = useRef(0);
   const seenMessageIdsRef = useRef<Set<string>>(new Set());
   const isInitialLoadRef = useRef(true);
-  const isGroup = conversation.type === 'group';
-
-  // Reset on conversation change
+  const isGroup = conversation.type === 'group';
   useEffect(() => {
     isInitialLoadRef.current = true;
     seenMessageIdsRef.current = new Set();
     setReplyTo(null);
     setShowInfo(false);
-  }, [conversation._id]);
-
-  // Scroll to bottom on initial load
+  }, [conversation._id]);
   useEffect(() => {
     if (isInitialLoadRef.current && messages.length > 0) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
       isInitialLoadRef.current = false;
     }
-  }, [messages.length]);
-
-  // Scroll to bottom on new message if near bottom
+  }, [messages.length]);
   const lastMessageId = messages[messages.length - 1]?._id;
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -123,9 +117,7 @@ export default function ChatWindow({
     if (distFromBottom < 120) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [lastMessageId]);
-
-  // Preserve scroll position when prepending older messages
+  }, [lastMessageId]);
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container || !loadingMore) return;
@@ -147,9 +139,7 @@ export default function ChatWindow({
     if (container.scrollTop < 80 && hasMore && !loadingMore) {
       onLoadMore(conversation._id);
     }
-  }, [hasMore, loadingMore, conversation._id, onLoadMore]);
-
-  // Intersection observer for seen
+  }, [hasMore, loadingMore, conversation._id, onLoadMore]);
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
@@ -172,9 +162,7 @@ export default function ChatWindow({
     return () => observer.disconnect();
   }, [messages, conversation._id, currentUserId, onMessageSeen]);
 
-  const messageGroups = groupByDate(messages);
-
-  // Header content
+  const messageGroups = groupByDate(messages);
   const headerAvatar = isGroup ? (
     <GroupAvatar name={conversation.name || 'Group'} avatarUrl={conversation.groupAvatar} size="md" />
   ) : (
@@ -198,7 +186,7 @@ export default function ChatWindow({
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
-      {/* Header */}
+      {}
       <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between flex-shrink-0 shadow-sm">
         <div className="flex items-center space-x-3">
           {onBack && (
@@ -226,7 +214,7 @@ export default function ChatWindow({
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Messages area */}
+        {}
         <div ref={scrollContainerRef} onScroll={handleScroll} className="flex-1 overflow-y-auto px-4 py-4 space-y-0.5">
           {loadingMore && (
             <div className="flex justify-center py-3">
@@ -264,8 +252,7 @@ export default function ChatWindow({
                 </div>
               </div>
 
-              {group.messages.map((message, index) => {
-                // System messages
+              {group.messages.map((message, index) => {
                 if (message.isSystemMessage) {
                   return (
                     <div key={message._id} className="flex justify-center my-2">
@@ -305,7 +292,7 @@ export default function ChatWindow({
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Right panel: DM info or Group settings */}
+        {}
         {showInfo && (
           isGroup ? (
             <GroupSettingsPanel

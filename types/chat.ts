@@ -1,14 +1,12 @@
 export interface Conversation {
   _id: string;
-  type: 'dm' | 'group';
-  // DM fields
+  type: 'dm' | 'group';
   otherParticipant?: {
     _id: string;
     fullName: string;
     profilePicture?: string;
     lastSeen: Date | string;
-  };
-  // Group fields
+  };
   name?: string;
   description?: string;
   groupAvatar?: string;

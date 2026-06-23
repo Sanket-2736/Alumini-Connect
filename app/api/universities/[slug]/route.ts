@@ -5,10 +5,7 @@ import Department from '@/models/Department';
 import Batch from '@/models/Batch';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 
-/**
- * GET /api/universities/[slug]
- * Return university with its departments and batches
- */
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
@@ -24,15 +21,11 @@ export async function GET(
 
     if (!university) {
       return errorResponse('University not found', 404);
-    }
-
-    // Get departments
+    }
     const departments = await Department.find({
       university: university._id,
       isActive: true
-    }).select('name').sort({ name: 1 });
-
-    // Get batches
+    }).select('name').sort({ name: 1 });
     const batches = await Batch.find({
       university: university._id
     })

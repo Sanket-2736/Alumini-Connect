@@ -23,9 +23,7 @@ export async function POST(
       return NextResponse.json({ error: 'Job not found' }, { status: 404 });
     }
 
-    const userId = user._id.toString();
-
-    // ✅ FIX: typed + safe comparison
+    const userId = user._id.toString();
     const alreadyApplied = job.applicants.some(
       (applicantId: Types.ObjectId) =>
         applicantId.toString() === userId
@@ -36,9 +34,7 @@ export async function POST(
         { error: 'You have already applied' },
         { status: 400 }
       );
-    }
-
-    // ✅ FIX: no "any"
+    }
     job.applicants.push(user._id as Types.ObjectId);
 
     await job.save();

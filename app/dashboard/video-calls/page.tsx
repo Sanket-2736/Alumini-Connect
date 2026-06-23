@@ -100,7 +100,7 @@ export default function VideoCallsPage() {
 
   return (
     <div className="max-w-6xl mx-auto py-8 px-4">
-      {/* Header */}
+      {}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -121,7 +121,7 @@ export default function VideoCallsPage() {
         )}
       </motion.div>
 
-      {/* Filters */}
+      {}
       <div className="flex gap-2 mb-6">
         {['all', 'scheduled', 'ongoing', 'completed', 'cancelled'].map((f) => (
           <button
@@ -138,7 +138,7 @@ export default function VideoCallsPage() {
         ))}
       </div>
 
-      {/* Calls Grid */}
+      {}
       {calls.length === 0 ? (
         <motion.div
           initial={{ opacity: 0 }}
@@ -158,7 +158,7 @@ export default function VideoCallsPage() {
               transition={{ delay: idx * 0.1 }}
               className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition"
             >
-              {/* Card Header */}
+              {}
               <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-4 text-white">
                 <h3 className="font-semibold text-lg truncate">{call.title}</h3>
                 <p className="text-indigo-100 text-sm">
@@ -166,9 +166,9 @@ export default function VideoCallsPage() {
                 </p>
               </div>
 
-              {/* Card Content */}
+              {}
               <div className="p-4 space-y-3">
-                {/* Remote User */}
+                {}
                 <div className="flex items-center gap-2">
                   <User size={16} className="text-gray-600" />
                   <span className="text-sm text-gray-700">
@@ -178,7 +178,7 @@ export default function VideoCallsPage() {
                   </span>
                 </div>
 
-                {/* Start Time */}
+                {}
                 <div className="flex items-center gap-2">
                   <Calendar size={16} className="text-gray-600" />
                   <span className="text-sm text-gray-700">
@@ -186,7 +186,7 @@ export default function VideoCallsPage() {
                   </span>
                 </div>
 
-                {/* Duration */}
+                {}
                 <div className="flex items-center gap-2">
                   <Clock size={16} className="text-gray-600" />
                   <span className="text-sm text-gray-700">
@@ -199,7 +199,7 @@ export default function VideoCallsPage() {
                   </span>
                 </div>
 
-                {/* Description */}
+                {}
                 {call.description && (
                   <p className="text-sm text-gray-600 line-clamp-2">
                     {call.description}
@@ -207,7 +207,7 @@ export default function VideoCallsPage() {
                 )}
               </div>
 
-              {/* Card Footer */}
+              {}
               <div className="px-4 py-3 border-t border-gray-200 flex gap-2">
                 {isUpcoming(call.scheduledStartTime) && call.status === 'scheduled' && (
                   <>

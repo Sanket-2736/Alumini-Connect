@@ -3,27 +3,14 @@
 import { create } from 'zustand';
 import { Conversation, Message } from '@/types/chat';
 
-interface ChatState {
-  // Conversations
+interface ChatState {
   conversations: Conversation[];
-  activeConversationId: string | null;
-
-  // Messages per conversation
-  messages: Map<string, Message[]>;
-
-  // Cursor for pagination per conversation (oldest message _id)
-  messageCursors: Map<string, string | null>;
-
-  // Whether there are more messages to load per conversation
-  hasMoreMessages: Map<string, boolean>;
-
-  // Typing users per conversation
-  typingUsers: Map<string, string[]>;
-
-  // Online users set
-  onlineUsers: Set<string>;
-
-  // Actions
+  activeConversationId: string | null;
+  messages: Map<string, Message[]>;
+  messageCursors: Map<string, string | null>;
+  hasMoreMessages: Map<string, boolean>;
+  typingUsers: Map<string, string[]>;
+  onlineUsers: Set<string>;
   setConversations: (conversations: Conversation[]) => void;
   addConversation: (conversation: Conversation) => void;
   updateConversation: (conversationId: string, updates: Partial<Conversation>) => void;
@@ -89,8 +76,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   addMessage: (message) =>
     set((state) => {
       const convId = message.conversationId;
-      const existing = state.messages.get(convId) || [];
-      // Avoid duplicates
+      const existing = state.messages.get(convId) || [];
       if (existing.some((m) => m._id === message._id)) return state;
       const newMap = new Map(state.messages);
       newMap.set(convId, [...existing, message]);

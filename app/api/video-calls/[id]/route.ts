@@ -2,23 +2,32 @@ import { NextRequest } from 'next/server';
 import connectToDatabase from '@/lib/db';
 import VideoCallBooking, { CallStatus } from '@/models/VideoCallBooking';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
-import { requireAuth } from '@/lib/admin';
+import { verifyAccessToken } from '@/lib/jwt';
+function getAuthenticatedUser(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
+    return null;
+  }
 
-/**
- * GET /api/video-calls/[id]
- * Get a specific video call booking
- */
+  const token = authHeader.substring(7);
+  return verifyAccessToken(token);
+}
+
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const authCheck = requireAuth(request);
-    if (authCheck) return authCheck;
+    const { id } = await params;
+    const decoded = getAuthenticatedUser(request);
+    if (!decoded) {
+      return errorResponse('Unauthorized', 401);
+    }
 
     await connectToDatabase();
 
-    const booking = await VideoCallBooking.findById(params.id)
+    const booking = await VideoCallBooking.findById(id)
       .populate('alumniId', 'fullName profilePicture email')
       .populate('studentId', 'fullName profilePicture email');
 
@@ -33,30 +42,28 @@ export async function GET(
   }
 }
 
-/**
- * PATCH /api/video-calls/[id]
- * Update video call booking status
- */
+
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const authCheck = requireAuth(request);
-    if (authCheck) return authCheck;
+    const { id } = await params;
+    const decoded = getAuthenticatedUser(request);
+    if (!decoded) {
+      return errorResponse('Unauthorized', 401);
+    }
 
     const body = await request.json();
     const { status, actualStartTime, actualEndTime, recordingUrl, notes } = body;
 
     await connectToDatabase();
 
-    const booking = await VideoCallBooking.findById(params.id);
+    const booking = await VideoCallBooking.findById(id);
 
     if (!booking) {
       return errorResponse('Video call booking not found', 404);
-    }
-
-    // Update fields
+    }
     if (status && Object.values(CallStatus).includes(status)) {
       booking.status = status;
     }
@@ -89,27 +96,25 @@ export async function PATCH(
   }
 }
 
-/**
- * DELETE /api/video-calls/[id]
- * Cancel a video call booking
- */
+
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const authCheck = requireAuth(request);
-    if (authCheck) return authCheck;
+    const { id } = await params;
+    const decoded = getAuthenticatedUser(request);
+    if (!decoded) {
+      return errorResponse('Unauthorized', 401);
+    }
 
     await connectToDatabase();
 
-    const booking = await VideoCallBooking.findById(params.id);
+    const booking = await VideoCallBooking.findById(id);
 
     if (!booking) {
       return errorResponse('Video call booking not found', 404);
-    }
-
-    // Only allow cancellation if not already started
+    }
     if (booking.status === CallStatus.ONGOING || booking.status === CallStatus.COMPLETED) {
       return errorResponse('Cannot cancel an ongoing or completed call', 400);
     }

@@ -4,9 +4,7 @@ import connectDB from '@/lib/mongodb';
 import Conversation from '@/models/Conversation';
 import mongoose from 'mongoose';
 
-type Params = { params: Promise<{ inviteSlug: string }> };
-
-// POST /api/chat/groups/join/[inviteSlug]
+type Params = { params: Promise<{ inviteSlug: string }> };
 export async function POST(request: NextRequest, { params }: Params) {
   try {
     await connectDB();
@@ -36,9 +34,7 @@ export async function POST(request: NextRequest, { params }: Params) {
 
     group.members.push(user._id as any);
     group.participants.push(user._id as any);
-    await group.save();
-
-    // Notify existing members
+    await group.save();
     if ((global as any)._socketIO) {
       const io = (global as any)._socketIO;
       const allMemberIds = group.members.map((m: mongoose.Types.ObjectId) => m.toString());

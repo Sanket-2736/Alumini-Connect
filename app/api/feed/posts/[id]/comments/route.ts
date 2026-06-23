@@ -27,15 +27,11 @@ const postId = id;
 
     if (content.length > 500) {
       return NextResponse.json({ error: 'Comment exceeds 500 characters' }, { status: 400 });
-    }
-
-    // Verify post exists
+    }
     const post = await Post.findById(postId);
     if (!post) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
-    }
-
-    // Create comment
+    }
     const comment = new Comment({
       post: postId,
       author: user._id,
@@ -43,13 +39,9 @@ const postId = id;
       replyTo: replyToId || null
     });
 
-    await comment.save();
-
-    // Increment comment count
+    await comment.save();
     post.commentCount += 1;
-    await post.save();
-
-    // Populate author for response
+    await post.save();
     await comment.populate('author', 'fullName profilePicture');
 
     return NextResponse.json({

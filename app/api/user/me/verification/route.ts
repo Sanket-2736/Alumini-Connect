@@ -5,27 +5,20 @@ import User from '@/models/User';
 import University from '@/models/University';
 import { getUserFromRequest } from '@/lib/auth';
 import { VerificationStatus } from '@/lib/enums';
-import { successResponse, errorResponse } from '@/lib/apiResponse';
-
-// Configure Cloudinary
+import { successResponse, errorResponse } from '@/lib/apiResponse';
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-/**
- * PUT /api/user/me/verification
- * Authenticated user uploads verification documents
- */
+
 export async function PUT(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request);
     if (!user) {
       return errorResponse('Unauthorized', 401);
-    }
-
-    // Check if user can submit verification
+    }
     if (user.verificationStatus === VerificationStatus.APPROVED) {
       return errorResponse('Your account is already verified', 400);
     }
@@ -41,9 +34,7 @@ export async function PUT(request: NextRequest) {
       return errorResponse('Maximum 3 documents allowed', 400);
     }
 
-    await connectToDatabase();
-
-    // Validate files
+    await connectToDatabase();
     const validTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
     const maxSize = 5 * 1024 * 1024; // 5MB
 
@@ -54,9 +45,7 @@ export async function PUT(request: NextRequest) {
       if (file.size > maxSize) {
         return errorResponse(`File too large: ${file.name}. Maximum 5MB allowed`, 400);
       }
-    }
-
-    // Upload files to Cloudinary
+    }
     const uploadPromises = files.map(async (file, index) => {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
@@ -78,9 +67,7 @@ export async function PUT(request: NextRequest) {
       });
     });
 
-    const uploadedUrls = await Promise.all(uploadPromises);
-
-    // Update user with new documents and status
+    const uploadedUrls = await Promise.all(uploadPromises);
     const updatedUser = await User.findByIdAndUpdate(
       user._id,
       {

@@ -124,7 +124,7 @@ export default function UserProfilePage({ params }: { params: { userId: string }
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* Back Button */}
+      {}
       <button
         onClick={() => router.back()}
         className="mb-6 text-indigo-600 hover:text-indigo-900 font-medium"
@@ -132,15 +132,15 @@ export default function UserProfilePage({ params }: { params: { userId: string }
         ← Back to Discover
       </button>
 
-      {/* Profile Header */}
+      {}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
-        {/* Cover Background */}
+        {}
         <div className="h-32 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
 
-        {/* Profile Info */}
+        {}
         <div className="px-6 pb-6">
           <div className="flex flex-col md:flex-row md:items-end md:space-x-6 -mt-16 mb-6">
-            {/* Profile Picture */}
+            {}
             {profile.profilePicture ? (
               <img
                 src={profile.profilePicture}
@@ -165,7 +165,7 @@ export default function UserProfilePage({ params }: { params: { userId: string }
               )}
             </div>
 
-            {/* Connection Button */}
+            {}
             {currentUser?._id !== profile._id && (
               <button
                 onClick={handleSendRequest}
@@ -189,12 +189,12 @@ export default function UserProfilePage({ params }: { params: { userId: string }
             )}
           </div>
 
-          {/* Bio */}
+          {}
           {profile.bio && (
             <p className="text-gray-700 mb-6">{profile.bio}</p>
           )}
 
-          {/* University Info */}
+          {}
           <div className="flex items-center space-x-4 mb-6 pb-6 border-b">
             {profile.university.logoUrl && (
               <img
@@ -209,7 +209,7 @@ export default function UserProfilePage({ params }: { params: { userId: string }
             </div>
           </div>
 
-          {/* Details Grid */}
+          {}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div>
               <p className="text-sm text-gray-600">Department</p>
@@ -229,7 +229,7 @@ export default function UserProfilePage({ params }: { params: { userId: string }
             )}
           </div>
 
-          {/* Skills */}
+          {}
           {profile.skills.length > 0 && (
             <div className="mb-6">
               <h3 className="font-semibold text-gray-900 mb-3">Skills</h3>
@@ -246,7 +246,7 @@ export default function UserProfilePage({ params }: { params: { userId: string }
             </div>
           )}
 
-          {/* Social Links */}
+          {}
           {profile.socialLinks && (
             Object.values(profile.socialLinks).some(link => link) && (
               <div>

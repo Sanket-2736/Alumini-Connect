@@ -64,9 +64,7 @@ const commentId = id;
 
     if (!comment) {
       return NextResponse.json({ error: 'Comment not found' }, { status: 404 });
-    }
-
-    // Check authorization
+    }
     const userDoc = await User.findById(user._id);
     const isAuthor = comment.author.toString() === user._id.toString();
     const isAdmin = userDoc?.role === 'admin' || userDoc?.role === 'moderator';

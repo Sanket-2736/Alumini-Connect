@@ -28,7 +28,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section */}
+      {}
       <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
         <div className="max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8">
           <div className="text-center">
@@ -72,7 +72,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Features Section */}
+      {}
       <div className="max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
@@ -84,7 +84,7 @@ export default function Home() {
           Why Join Alumni Connect?
         </motion.h2>
         <div className="grid md:grid-cols-3 gap-8">
-          {/* Feature 1 */}
+          {}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -102,7 +102,7 @@ export default function Home() {
             </p>
           </motion.div>
 
-          {/* Feature 2 */}
+          {}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -120,7 +120,7 @@ export default function Home() {
             </p>
           </motion.div>
 
-          {/* Feature 3 */}
+          {}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -138,7 +138,7 @@ export default function Home() {
             </p>
           </motion.div>
 
-          {/* Feature 4 */}
+          {}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -156,7 +156,7 @@ export default function Home() {
             </p>
           </motion.div>
 
-          {/* Feature 5 */}
+          {}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -174,7 +174,7 @@ export default function Home() {
             </p>
           </motion.div>
 
-          {/* Feature 6 */}
+          {}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -194,7 +194,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* How It Works Section */}
+      {}
       <div className="bg-gray-50 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.h2
@@ -235,7 +235,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Stats Section */}
+      {}
       <div className="max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-3 gap-8 text-center">
           {[
@@ -265,7 +265,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* CTA Section */}
+      {}
       <div className="bg-indigo-600 text-white py-16">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <motion.h2
@@ -303,7 +303,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Footer */}
+      {}
       <footer className="bg-gray-900 text-gray-400 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8 mb-8">

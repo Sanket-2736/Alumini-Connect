@@ -1,18 +1,11 @@
-import { v2 as cloudinary } from 'cloudinary';
-
-// Configure Cloudinary
+import { v2 as cloudinary } from 'cloudinary';
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-/**
- * Upload a file to Cloudinary
- * @param file - File data (base64 or buffer)
- * @param folder - Folder path in Cloudinary
- * @param publicId - Optional public ID for the file
- */
+
 export async function uploadToCloudinary(
   file: Buffer | string,
   folder: string,
@@ -49,10 +42,7 @@ export async function uploadToCloudinary(
   }
 }
 
-/**
- * Delete a file from Cloudinary
- * @param publicId - Public ID of the file to delete (including folder path)
- */
+
 export async function deleteFromCloudinary(publicId: string): Promise<void> {
   try {
     await cloudinary.uploader.destroy(publicId);
@@ -62,10 +52,7 @@ export async function deleteFromCloudinary(publicId: string): Promise<void> {
   }
 }
 
-/**
- * Extract public ID from Cloudinary URL
- * @param url - Cloudinary URL
- */
+
 export function getPublicIdFromUrl(url: string): string {
   try {
     const matches = url.match(/\/(?:v\d+\/)?([^/?]+\/)([a-zA-Z0-9_-]+)(?:\.[a-z]+)?(?:\?.*)?$/);

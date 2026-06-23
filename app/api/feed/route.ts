@@ -14,24 +14,18 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type') || 'all'; // all | announcement | success_story
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
-    const skip = (page - 1) * limit;
-
-    // Build type filter
+    const skip = (page - 1) * limit;
     const typeFilter: any = {};
     if (type !== 'all') {
       typeFilter.type = type;
-    }
-
-    // Build scope filter
+    }
     const scopeFilter: any = {};
     if (scope === 'university' && user) {
       const userDoc = await User.findById(user._id);
       if (userDoc?.university) {
         scopeFilter.university = userDoc.university;
       }
-    }
-
-    // Aggregation pipeline for engagement scoring
+    }
     const pipeline: any[] = [
       {
         $match: {
@@ -39,8 +33,7 @@ export async function GET(request: NextRequest) {
           ...typeFilter,
           ...scopeFilter
         }
-      },
-      // Add engagement score
+      },
       {
         $addFields: {
           likeCount: { $size: '$likes' },
@@ -65,15 +58,12 @@ export async function GET(request: NextRequest) {
             ]
           }
         }
-      },
-      // Sort: pinned first, then by engagement score
+      },
       {
         $sort: { isPinned: -1, engagementScore: -1, createdAt: -1 }
-      },
-      // Pagination
+      },
       { $skip: skip },
-      { $limit: limit },
-      // Populate author
+      { $limit: limit },
       {
         $lookup: {
           from: 'users',
@@ -82,8 +72,7 @@ export async function GET(request: NextRequest) {
           as: 'authorData'
         }
       },
-      { $unwind: '$authorData' },
-      // Populate university
+      { $unwind: '$authorData' },
       {
         $lookup: {
           from: 'universities',
@@ -95,9 +84,7 @@ export async function GET(request: NextRequest) {
       { $unwind: { path: '$universityData', preserveNullAndEmptyArrays: true } }
     ];
 
-    const posts = await Post.aggregate(pipeline) as any[];
-
-    // Add isLiked and isSaved flags for current user
+    const posts = await Post.aggregate(pipeline) as any[];
     const formattedPosts = posts.map(post => ({
       ...post,
       _id: post._id.toString(),
@@ -112,9 +99,7 @@ export async function GET(request: NextRequest) {
       isSaved: user ? (post.authorData.savedPosts?.includes(user._id)) : false,
       likes: post.likes.length,
       comments: post.commentCount
-    }));
-
-    // Get total count
+    }));
     const totalCount = await Post.countDocuments({
       isArchived: false,
       ...typeFilter,

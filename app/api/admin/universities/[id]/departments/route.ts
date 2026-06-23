@@ -5,10 +5,7 @@ import Department from '@/models/Department';
 import { requireAdmin } from '@/lib/admin';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 
-/**
- * GET /api/admin/universities/[id]/departments
- * Admin only - list departments for a university
- */
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -36,10 +33,7 @@ export async function GET(
   }
 }
 
-/**
- * POST /api/admin/universities/[id]/departments
- * Admin only - create department for a university
- */
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

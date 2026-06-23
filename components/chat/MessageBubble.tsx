@@ -16,9 +16,7 @@ interface MessageBubbleProps {
   onReactionUpdate: (messageId: string, reactions: Reaction[]) => void;
 }
 
-const QUICK_EMOJIS = ['👍', '❤️', '😂', '😮', '😢', '😡'];
-
-// Group reactions by emoji
+const QUICK_EMOJIS = ['👍', '❤️', '😂', '😮', '😢', '😡'];
 function groupReactions(reactions: Reaction[]): { emoji: string; count: number; userIds: string[] }[] {
   const map = new Map<string, string[]>();
   for (const r of reactions) {
@@ -55,9 +53,7 @@ export default function MessageBubble({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const emojiPickerRef = useRef<HTMLDivElement>(null);
-
-  // Close emoji picker on outside click
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!showEmojiPicker) return;
     const handler = (e: MouseEvent) => {
@@ -101,9 +97,7 @@ export default function MessageBubble({
     }
   };
 
-  const groupedReactions = groupReactions(message.reactions || []);
-
-  // Deleted message
+  const groupedReactions = groupReactions(message.reactions || []);
   if (message.isDeleted) {
     return (
       <div
@@ -130,7 +124,7 @@ export default function MessageBubble({
 
   return (
     <>
-      {/* Lightbox */}
+      {}
       {lightboxUrl && (
         <div
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
@@ -160,7 +154,7 @@ export default function MessageBubble({
         onMouseLeave={() => { setHovered(false); setShowDeleteConfirm(false); }}
         data-message-id={message._id}
       >
-        {/* Avatar (other user only) */}
+        {}
         <div className={`w-8 flex-shrink-0 ${isOwn ? 'mr-2' : 'ml-2'}`}>
           {!isOwn && showAvatar && (
             <img
@@ -171,9 +165,9 @@ export default function MessageBubble({
           )}
         </div>
 
-        {/* Bubble + reactions */}
+        {}
         <div className={`flex flex-col max-w-xs lg:max-w-md ${isOwn ? 'items-end' : 'items-start'}`}>
-          {/* Reply quote */}
+          {}
           {message.replyTo && (
             <div
               className={`mb-1 px-3 py-1.5 rounded-lg border-l-4 text-xs max-w-full ${
@@ -187,7 +181,7 @@ export default function MessageBubble({
             </div>
           )}
 
-          {/* Bubble */}
+          {}
           <div
             className={`relative px-3 py-2 shadow-sm ${
               isOwn
@@ -211,7 +205,7 @@ export default function MessageBubble({
                   }`
             }`}
           >
-            {/* Image attachments */}
+            {}
             {message.attachments?.filter((a) => a.type === 'image').map((att, i) => (
               <div key={i} className="mb-2 last:mb-0">
                 <img
@@ -224,7 +218,7 @@ export default function MessageBubble({
               </div>
             ))}
 
-            {/* Document attachments */}
+            {}
             {message.attachments?.filter((a) => a.type === 'document').map((att, i) => (
               <a
                 key={i}
@@ -250,19 +244,19 @@ export default function MessageBubble({
               </a>
             ))}
 
-            {/* Sender name in group chats */}
+            {}
             {isGroup && !isOwn && isFirstInGroup && (
               <p className="text-xs font-semibold text-indigo-600 mb-1">{message.sender.fullName}</p>
             )}
 
-            {/* Text content */}
+            {}
             {message.content && (
               <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">
                 {message.content}
               </p>
             )}
 
-            {/* Timestamp + status */}
+            {}
             <div
               className={`flex items-center justify-end space-x-1 mt-1 transition-opacity ${
                 hovered ? 'opacity-100' : 'opacity-0'
@@ -281,7 +275,7 @@ export default function MessageBubble({
             </div>
           </div>
 
-          {/* Reactions */}
+          {}
           {groupedReactions.length > 0 && (
             <div className={`flex flex-wrap gap-1 mt-1 ${isOwn ? 'justify-end' : 'justify-start'}`}>
               {groupedReactions.map(({ emoji, count, userIds }) => {
@@ -306,13 +300,13 @@ export default function MessageBubble({
           )}
         </div>
 
-        {/* Hover action buttons */}
+        {}
         <div
           className={`flex items-center space-x-1 mx-2 transition-opacity ${
             hovered ? 'opacity-100' : 'opacity-0'
           } ${isOwn ? 'flex-row-reverse space-x-reverse' : ''}`}
         >
-          {/* Reply */}
+          {}
           <button
             onClick={() => onReply(message)}
             className="p-1.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
@@ -323,7 +317,7 @@ export default function MessageBubble({
             </svg>
           </button>
 
-          {/* Emoji reaction */}
+          {}
           <div className="relative" ref={emojiPickerRef}>
             <button
               onClick={() => setShowEmojiPicker((v) => !v)}
@@ -355,7 +349,7 @@ export default function MessageBubble({
             )}
           </div>
 
-          {/* Delete (own messages only) */}
+          {}
           {isOwn && (
             <div className="relative">
               <button

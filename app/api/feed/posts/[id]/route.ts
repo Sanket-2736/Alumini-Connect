@@ -16,9 +16,7 @@ export async function GET(
     const user = await getUserFromRequest(request);
 
     const { id } = await context.params;
-const postId = id;
-
-    // Get post with author details
+const postId = id;
     const post = await Post.findById(postId)
       .populate({
         path: 'author',
@@ -31,9 +29,7 @@ const postId = id;
 
     if (!post || post.isArchived) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
-    }
-
-    // Get all comments with replies (2-level nesting)
+    }
     const comments = await Comment.find({
       post: postId,
       isDeleted: false,
@@ -46,18 +42,14 @@ const postId = id;
     })
     .sort({ createdAt: -1 })
     .limit(3) // Top 3 comments
-    .lean();
-
-    // Get reply count for each comment
+    .lean();
     const commentIds = comments.map(c => c._id);
     const replyCounts = await Comment.aggregate([
       { $match: { replyTo: { $in: commentIds }, isDeleted: false } },
       { $group: { _id: '$replyTo', count: { $sum: 1 } } }
     ]);
 
-    const replyCountMap = Object.fromEntries(replyCounts.map(r => [r._id.toString(), r.count]));
-
-    // Format response
+    const replyCountMap = Object.fromEntries(replyCounts.map(r => [r._id.toString(), r.count]));
     const formattedPost = {
       _id: post._id,
       author: {
@@ -125,14 +117,10 @@ const postId = id;
 
     if (!post) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
-    }
-
-    // Check ownership
+    }
     if (post.author.toString() !== user._id.toString()) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
-    }
-
-    // Check edit window (30 minutes)
+    }
     const now = new Date();
     const editWindowMinutes = 30;
     const createdAtTime = new Date(post.createdAt).getTime();
@@ -179,18 +167,14 @@ const postId = id;
 
     if (!post) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
-    }
-
-    // Check authorization: author or admin/moderator
+    }
     const userDoc = await User.findById(user._id);
     const isAuthor = post.author.toString() === user._id.toString();
     const isAdmin = userDoc?.role === 'admin' || userDoc?.role === 'moderator';
 
     if (!isAuthor && !isAdmin) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
-    }
-
-    // Soft delete
+    }
     post.isArchived = true;
     await post.save();
 

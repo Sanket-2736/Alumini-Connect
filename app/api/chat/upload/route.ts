@@ -4,9 +4,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import { writeFile, unlink } from 'fs/promises';
 import { join } from 'path';
 import { tmpdir } from 'os';
-import mime from 'mime-types';
-
-// Configure Cloudinary
+import mime from 'mime-types';
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -30,35 +28,24 @@ export async function POST(request: NextRequest) {
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
-    }
-
-    // Validate file size
+    }
     if (file.size > MAX_FILE_SIZE) {
       return NextResponse.json({ error: 'File size exceeds 20MB limit' }, { status: 400 });
-    }
-
-    // Validate file type
+    }
     const allowedTypes = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_DOCUMENT_TYPES];
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json({ error: 'Invalid file type' }, { status: 400 });
-    }
-
-    // Determine file type category
+    }
     const isImage = ALLOWED_IMAGE_TYPES.includes(file.type);
-    const fileType = isImage ? 'image' : 'document';
-
-    // Create temporary file
+    const fileType = isImage ? 'image' : 'document';
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
     const tempFilePath = join(tmpdir(), `upload_${Date.now()}_${file.name}`);
-    await writeFile(tempFilePath, buffer);
-
-    // Optional conversationId for folder organisation
+    await writeFile(tempFilePath, buffer);
     const conversationId = formData.get('conversationId') as string | null;
     const folder = conversationId ? `alumni/chat/${conversationId}` : 'alumni/chat';
 
-    try {
-      // Upload to Cloudinary
+    try {
       const uploadResult = await cloudinary.uploader.upload(tempFilePath, {
         folder,
         resource_type: isImage ? 'image' : 'raw',
@@ -67,9 +54,7 @@ export async function POST(request: NextRequest) {
           { width: 1200, height: 1200, crop: 'limit' }, // Max dimensions for images
           { quality: 'auto' }
         ] : undefined
-      });
-
-      // Clean up temp file
+      });
       await unlink(tempFilePath);
 
       return NextResponse.json({
@@ -79,8 +64,7 @@ export async function POST(request: NextRequest) {
         fileSize: file.size
       });
 
-    } catch (uploadError) {
-      // Clean up temp file on error
+    } catch (uploadError) {
       await unlink(tempFilePath);
       throw uploadError;
     }

@@ -25,9 +25,7 @@ export default function ScheduleVideoCallPage() {
     scheduledStartTime: '',
     scheduledEndTime: '',
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Fetch connected students
+  const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
     const fetchStudents = async () => {
       try {
@@ -109,7 +107,7 @@ export default function ScheduleVideoCallPage() {
         <p className="text-gray-600 mb-8">Set up a one-on-one video call with a student</p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Student Selection */}
+          {}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -141,7 +139,7 @@ export default function ScheduleVideoCallPage() {
             )}
           </motion.div>
 
-          {/* Title */}
+          {}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -163,7 +161,7 @@ export default function ScheduleVideoCallPage() {
             />
           </motion.div>
 
-          {/* Description */}
+          {}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -181,7 +179,7 @@ export default function ScheduleVideoCallPage() {
             />
           </motion.div>
 
-          {/* Start Time */}
+          {}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -202,7 +200,7 @@ export default function ScheduleVideoCallPage() {
             />
           </motion.div>
 
-          {/* End Time */}
+          {}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -223,7 +221,7 @@ export default function ScheduleVideoCallPage() {
             />
           </motion.div>
 
-          {/* Submit Button */}
+          {}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

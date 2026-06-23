@@ -4,9 +4,7 @@ import { getUserFromRequest } from '@/lib/auth';
 import connectDB from '@/lib/mongodb';
 import Conversation from '@/models/Conversation';
 
-type Params = { params: Promise<{ id: string; userId: string }> };
-
-// PUT /api/chat/groups/[id]/members/[userId]/promote
+type Params = { params: Promise<{ id: string; userId: string }> };
 export async function PUT(request: NextRequest, { params }: Params) {
   try {
     await connectDB();

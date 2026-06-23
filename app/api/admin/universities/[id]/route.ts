@@ -5,15 +5,11 @@ import University from '@/models/University';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 import { requireAdmin } from '@/lib/admin';
 
-/**
- * PATCH /api/admin/universities/[id]
- * Update a university
- */
+
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
-  // Check admin access
+) {
   const adminCheck = requireAdmin(request);
   if (adminCheck) return adminCheck;
 
@@ -44,15 +40,11 @@ export async function PATCH(
   }
 }
 
-/**
- * DELETE /api/admin/universities/[id]
- * Delete a university
- */
+
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
-  // Check admin access
+) {
   const adminCheck = requireAdmin(request);
   if (adminCheck) return adminCheck;
 

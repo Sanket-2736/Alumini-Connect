@@ -6,15 +6,11 @@ import { successResponse, errorResponse } from '@/lib/apiResponse';
 import { requireAdmin } from '@/lib/admin';
 import { VerificationStatus } from '@/lib/enums';
 
-/**
- * POST /api/admin/verifications/[userId]/approve
- * Approve a user's verification documents
- */
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ userId: string }> }
-) {
-  // Check admin access
+) {
   const adminCheck = requireAdmin(request);
   if (adminCheck) return adminCheck;
 

@@ -4,10 +4,7 @@ import User from '@/models/User';
 import University from '@/models/University';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 
-/**
- * GET /api/user/[userId]
- * Get a specific user's public profile
- */
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ userId: string }> }
@@ -27,9 +24,7 @@ export async function GET(
 
     if (!user) {
       return errorResponse('User not found', 404);
-    }
-
-    // Return public profile data
+    }
     const profile = {
       _id: user._id,
       fullName: user.fullName,

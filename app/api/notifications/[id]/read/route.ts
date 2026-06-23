@@ -3,9 +3,7 @@ import { getUserFromRequest } from '@/lib/auth';
 import connectDB from '@/lib/mongodb';
 import Notification from '@/models/Notification';
 
-type Params = { params: Promise<{ id: string }> };
-
-// PUT /api/notifications/[id]/read
+type Params = { params: Promise<{ id: string }> };
 export async function PUT(request: NextRequest, { params }: Params) {
   try {
     await connectDB();

@@ -3,9 +3,7 @@ import User from '@/models/User';
 
 export async function GET() {
   try {
-    await connectDB();
-
-    // Get recently verified alumni
+    await connectDB();
     const spotlight = await User.find(
       { verificationStatus: 'approved' },
       { fullName: 1, profilePicture: 1, currentRole: 1, university: 1, verificationStatus: 1 }

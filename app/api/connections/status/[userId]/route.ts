@@ -6,10 +6,7 @@ import { getUserFromRequest } from '@/lib/auth';
 import { ConnectionStatus } from '@/models/Connection';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 
-/**
- * GET /api/connections/status/[userId]
- * Get connection status between current user and specified user
- */
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ userId: string }> }
@@ -26,15 +23,11 @@ export async function GET(
       return errorResponse('Cannot check connection status with yourself', 400);
     }
 
-    await connectToDatabase();
-
-    // Check if target user exists
+    await connectToDatabase();
     const targetUser = await User.findOne({ _id: userId, isBanned: false });
     if (!targetUser) {
       return errorResponse('User not found', 404);
-    }
-
-    // Find connection between users
+    }
     const connection = await Connection.findOne({
       $or: [
         { requester: user._id, recipient: userId },

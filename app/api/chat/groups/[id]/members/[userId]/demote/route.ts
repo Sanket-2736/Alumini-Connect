@@ -4,9 +4,7 @@ import connectDB from '@/lib/mongodb';
 import Conversation from '@/models/Conversation';
 import mongoose from 'mongoose';
 
-type Params = { params: Promise<{ id: string; userId: string }> };
-
-// PUT /api/chat/groups/[id]/members/[userId]/demote
+type Params = { params: Promise<{ id: string; userId: string }> };
 export async function PUT(request: NextRequest, { params }: Params) {
   try {
     await connectDB();

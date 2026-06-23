@@ -7,9 +7,7 @@ import { createNotification } from '@/lib/services/notificationService';
 import { NotificationType } from '@/models/Notification';
 import mongoose from 'mongoose';
 
-type Params = { params: Promise<{ id: string }> };
-
-// POST /api/chat/groups/[id]/members — add members (admin only)
+type Params = { params: Promise<{ id: string }> };
 export async function POST(request: NextRequest, { params }: Params) {
   try {
     await connectDB();
@@ -32,13 +30,9 @@ export async function POST(request: NextRequest, { params }: Params) {
     const currentMemberCount = group.members.length;
     if (currentMemberCount + userIds.length > 500) {
       return NextResponse.json({ error: 'Would exceed 500 member limit' }, { status: 400 });
-    }
-
-    // Validate users exist
+    }
     const newUsers = await User.find({ _id: { $in: userIds }, isBanned: false }).select('_id fullName');
-    const newUserIds = newUsers.map((u) => u._id.toString());
-
-    // Filter out already-members
+    const newUserIds = newUsers.map((u) => u._id.toString());
     const existingMemberIds = group.members.map((m: mongoose.Types.ObjectId) => m.toString());
     const toAdd = newUserIds.filter((uid) => !existingMemberIds.includes(uid));
 
@@ -48,9 +42,7 @@ export async function POST(request: NextRequest, { params }: Params) {
 
     group.members.push(...(toAdd as any));
     group.participants.push(...(toAdd as any));
-    await group.save();
-
-    // Notify added members
+    await group.save();
     await Promise.all(
       toAdd.map((memberId) =>
         createNotification({
@@ -64,9 +56,7 @@ export async function POST(request: NextRequest, { params }: Params) {
           entityModel: 'Conversation',
         })
       )
-    );
-
-    // Emit group:member_added via socket if available
+    );
     if ((global as any)._socketIO) {
       const io = (global as any)._socketIO;
       const addedUsers = newUsers.filter((u) => toAdd.includes(u._id.toString()));

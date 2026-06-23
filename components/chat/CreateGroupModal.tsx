@@ -98,7 +98,7 @@ export default function CreateGroupModal({ onClose, onGroupCreated }: CreateGrou
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900">Create Group</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
@@ -109,7 +109,7 @@ export default function CreateGroupModal({ onClose, onGroupCreated }: CreateGrou
         </div>
 
         <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
-          {/* Avatar */}
+          {}
           <div className="flex items-center space-x-4">
             <div
               className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center cursor-pointer overflow-hidden border-2 border-dashed border-gray-300 hover:border-indigo-400 transition-colors"
@@ -123,19 +123,7 @@ export default function CreateGroupModal({ onClose, onGroupCreated }: CreateGrou
                 </svg>
               )}
             </div>
-            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
-            <div className="flex-1">
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Group name *"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-          </div>
-
-          {/* Description */}
+            <input ref={fileInputRef} type="file" accept="image}
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -144,7 +132,7 @@ export default function CreateGroupModal({ onClose, onGroupCreated }: CreateGrou
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
           />
 
-          {/* Group type */}
+          {}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Group Type</label>
             <select
@@ -158,7 +146,7 @@ export default function CreateGroupModal({ onClose, onGroupCreated }: CreateGrou
             </select>
           </div>
 
-          {/* Member search */}
+          {}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Add Members</label>
             <div className="relative">
@@ -174,7 +162,7 @@ export default function CreateGroupModal({ onClose, onGroupCreated }: CreateGrou
               </svg>
             </div>
 
-            {/* Search results */}
+            {}
             {searchResults.length > 0 && (
               <div className="mt-1 border border-gray-200 rounded-lg overflow-hidden max-h-40 overflow-y-auto">
                 {searchResults.map((u) => (
@@ -191,7 +179,7 @@ export default function CreateGroupModal({ onClose, onGroupCreated }: CreateGrou
               </div>
             )}
 
-            {/* Selected members */}
+            {}
             {selectedMembers.length > 0 && (
               <div className="mt-2 flex flex-wrap gap-2">
                 {selectedMembers.map((m) => (
@@ -207,7 +195,7 @@ export default function CreateGroupModal({ onClose, onGroupCreated }: CreateGrou
           {error && <p className="text-sm text-red-500">{error}</p>}
         </div>
 
-        {/* Footer */}
+        {}
         <div className="flex items-center justify-between px-5 py-4 border-t border-gray-200">
           <span className="text-xs text-gray-500">{selectedMembers.length} member{selectedMembers.length !== 1 ? 's' : ''} selected</span>
           <div className="flex space-x-3">

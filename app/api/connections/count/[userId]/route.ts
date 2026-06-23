@@ -4,10 +4,7 @@ import Connection from '@/models/Connection';
 import { ConnectionStatus } from '@/models/Connection';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 
-/**
- * GET /api/connections/count/[userId]
- * Get the number of accepted connections for a user
- */
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ userId: string }> }
@@ -15,9 +12,7 @@ export async function GET(
   try {
     const { userId } = await params;
 
-    await connectToDatabase();
-
-    // Count accepted connections where user is either requester or recipient
+    await connectToDatabase();
     const count = await Connection.countDocuments({
       $or: [
         { requester: userId, status: ConnectionStatus.ACCEPTED },

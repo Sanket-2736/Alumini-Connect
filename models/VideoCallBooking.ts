@@ -71,9 +71,7 @@ const VideoCallBookingSchema = new Schema<IVideoCallBooking>(
     notes: String,
   },
   { timestamps: true }
-);
-
-// Index for efficient queries
+);
 VideoCallBookingSchema.index({ alumniId: 1, status: 1 });
 VideoCallBookingSchema.index({ studentId: 1, status: 1 });
 VideoCallBookingSchema.index({ scheduledStartTime: 1 });

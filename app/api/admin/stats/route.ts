@@ -5,12 +5,8 @@ import University from '@/models/University';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 import { requireAdmin } from '@/lib/admin';
 
-/**
- * GET /api/admin/stats
- * Get platform statistics
- */
-export async function GET(request: NextRequest) {
-  // Check admin access
+
+export async function GET(request: NextRequest) {
   const adminCheck = requireAdmin(request);
   if (adminCheck) return adminCheck;
 
@@ -39,8 +35,7 @@ export async function GET(request: NextRequest) {
       User.countDocuments({ isBanned: true }),
       User.countDocuments({ isBanned: false }),
       User.countDocuments({ role: 'student' }),
-      User.countDocuments({ role: 'alumni' }),
-      // These would need actual models - using 0 for now
+      User.countDocuments({ role: 'alumni' }),
       Promise.resolve(0), // totalConnections
       Promise.resolve(0), // totalMessages
       Promise.resolve(0), // totalGroups

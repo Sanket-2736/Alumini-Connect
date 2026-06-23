@@ -5,10 +5,7 @@ import Connection from '@/models/Connection';
 import { ConnectionStatus } from '@/models/Connection';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 
-/**
- * GET /api/connections/search
- * Search for connected users (both alumni and students)
- */
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -24,22 +21,16 @@ export async function GET(request: NextRequest) {
       return successResponse([], 'No search query provided');
     }
 
-    await connectToDatabase();
-
-    // Find all accepted connections for the user
+    await connectToDatabase();
     const connections = await Connection.find({
       $or: [
         { requester: userId, status: ConnectionStatus.ACCEPTED },
         { recipient: userId, status: ConnectionStatus.ACCEPTED },
       ],
-    }).select('requester recipient');
-
-    // Get all connected user IDs
+    }).select('requester recipient');
     const connectedUserIds = connections.map(conn =>
       conn.requester.toString() === userId ? conn.recipient : conn.requester
-    );
-
-    // Search for connected users matching the query
+    );
     const searchQuery = q.trim();
     const users = await User.find({
       _id: { $in: connectedUserIds },

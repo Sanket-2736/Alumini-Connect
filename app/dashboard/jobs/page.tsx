@@ -69,7 +69,7 @@ export default function JobListingPage() {
   return (
     <div className="bg-gray-50 min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
+        {}
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold">Job Opportunities</h1>
           <Link
@@ -81,11 +81,11 @@ export default function JobListingPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Filters Sidebar */}
+          {}
           <div className="bg-white rounded-lg shadow-sm p-6 h-fit">
             <h3 className="font-bold text-lg mb-4">Filters</h3>
 
-            {/* Search */}
+            {}
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
               <input
@@ -97,7 +97,7 @@ export default function JobListingPage() {
               />
             </div>
 
-            {/* Job Type */}
+            {}
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">Job Type</label>
               {['full_time', 'part_time', 'internship', 'contract', 'freelance'].map(type => (
@@ -113,7 +113,7 @@ export default function JobListingPage() {
               ))}
             </div>
 
-            {/* Experience Level */}
+            {}
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">Experience</label>
               {['entry', 'mid', 'senior'].map(level => (
@@ -130,7 +130,7 @@ export default function JobListingPage() {
               ))}
             </div>
 
-            {/* Remote */}
+            {}
             <label className="flex items-center gap-2 mb-4 cursor-pointer">
               <input
                 type="checkbox"
@@ -141,7 +141,7 @@ export default function JobListingPage() {
               <span className="text-sm font-medium text-gray-700">Remote only</span>
             </label>
 
-            {/* Referral */}
+            {}
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
@@ -153,7 +153,7 @@ export default function JobListingPage() {
             </label>
           </div>
 
-          {/* Job Cards */}
+          {}
           <div className="lg:col-span-3 space-y-4">
             {loading ? (
               <div className="flex justify-center py-12">

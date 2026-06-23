@@ -24,9 +24,7 @@ export async function POST(
 
     if (!emoji) {
       return NextResponse.json({ error: 'Emoji is required' }, { status: 400 });
-    }
-
-    // Find the message
+    }
     const message = await Message.findById(messageId);
 
     if (!message) {
@@ -35,19 +33,15 @@ export async function POST(
 
     if (message.isDeleted) {
       return NextResponse.json({ error: 'Cannot react to deleted message' }, { status: 400 });
-    }
-
-    // Check if user already reacted with this emoji
+    }
     const existingReactionIndex = message.reactions.findIndex(
       (reaction: { userId: { toString(): string }; emoji: string }) =>
         reaction.userId.toString() === user._id.toString() && reaction.emoji === emoji
     );
 
-    if (existingReactionIndex >= 0) {
-      // Remove the reaction (toggle off)
+    if (existingReactionIndex >= 0) {
       message.reactions.splice(existingReactionIndex, 1);
-    } else {
-      // Add the reaction
+    } else {
       message.reactions.push({
         userId: user._id,
         emoji

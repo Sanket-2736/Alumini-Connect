@@ -140,15 +140,15 @@ export default function UsersPage() {
                 key={user._id}
                 className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
               >
-                {/* Card Header */}
+                {}
                 <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4 text-white">
                   <h3 className="text-lg font-semibold truncate">{user.fullName}</h3>
                   <p className="text-indigo-100 text-sm truncate">{user.email}</p>
                 </div>
 
-                {/* Card Content */}
+                {}
                 <div className="px-6 py-4">
-                  {/* Details Grid */}
+                  {}
                   <div className="space-y-3 mb-4">
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-600">Role:</span>
@@ -200,7 +200,7 @@ export default function UsersPage() {
                     </div>
                   </div>
 
-                  {/* University */}
+                  {}
                   {user.university && (
                     <div className="mb-4 pb-4 border-t border-gray-200 pt-4">
                       <p className="text-xs text-gray-600 mb-1">University:</p>
@@ -211,7 +211,7 @@ export default function UsersPage() {
                   )}
                 </div>
 
-                {/* Card Footer - Actions */}
+                {}
                 <div className="px-6 py-4 border-t border-gray-200 flex gap-2">
                   <button
                     onClick={() => handleBanUser(user._id, user.isBanned)}

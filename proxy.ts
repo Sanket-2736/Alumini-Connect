@@ -35,17 +35,14 @@ export function proxy(request: NextRequest) {
   if (!isProtectedRoute || isPublicRoute) {
     console.log(`  ✅ Route is public/unprotected, skipping token check`);
     return NextResponse.next();
-  }
-
-  // Try to get token from Authorization header first
+  }
   let authHeader = request.headers.get('authorization');
   let token: string | null = null;
 
   if (authHeader && authHeader.startsWith('Bearer ')) {
     token = authHeader.substring(7);
     console.log(`  - Token from Authorization header`);
-  } else {
-    // If no Authorization header, try to get refresh token from cookies
+  } else {
     const refreshToken = request.cookies.get('refreshToken')?.value;
     if (refreshToken) {
       token = refreshToken;
@@ -61,12 +58,8 @@ export function proxy(request: NextRequest) {
       { success: false, message: 'Access token required' },
       { status: 401 }
     );
-  }
-
-  // Try to verify as access token first
-  let payload = verifyAccessToken(token);
-
-  // If access token is invalid, try refresh token
+  }
+  let payload = verifyAccessToken(token);
   if (!payload) {
     payload = verifyRefreshToken(token);
     if (payload) {

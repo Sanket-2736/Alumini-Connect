@@ -7,15 +7,11 @@ import { requireAdmin } from '@/lib/admin';
 import { deleteFromCloudinary, getPublicIdFromUrl } from '@/lib/cloudinary';
 import { VerificationStatus } from '@/lib/enums';
 
-/**
- * PATCH /api/admin/users/[id]
- * Update a user (ban/unban, etc.)
- */
+
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
-  // Check admin access
+) {
   const adminCheck = requireAdmin(request);
   if (adminCheck) return adminCheck;
 
@@ -27,15 +23,11 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    await connectToDatabase();
-
-    // Get the user first to handle verification logic
+    await connectToDatabase();
     const user = await User.findById(id);
     if (!user) {
       return errorResponse('User not found', 404);
-    }
-
-    // Handle verification/rejection
+    }
     if (body.action === 'verify') {
       if (user.verificationStatus !== VerificationStatus.PENDING) {
         return errorResponse('User is not pending verification', 400);
@@ -57,9 +49,7 @@ export async function PATCH(
       user.rejectionReason = body.reason;
       await user.save();
       return successResponse(user, 'User rejected successfully');
-    }
-
-    // Only allow updating specific fields
+    }
     const allowedUpdates = ['isBanned'];
     const updates: any = {};
 
@@ -82,15 +72,11 @@ export async function PATCH(
   }
 }
 
-/**
- * DELETE /api/admin/users/[id]
- * Delete a user and their verification documents
- */
+
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
-  // Check admin access
+) {
   const adminCheck = requireAdmin(request);
   if (adminCheck) return adminCheck;
 
@@ -106,9 +92,7 @@ export async function DELETE(
     const user = await User.findById(id);
     if (!user) {
       return errorResponse('User not found', 404);
-    }
-
-    // Delete verification documents from Cloudinary
+    }
     if (user.verificationDocs && user.verificationDocs.length > 0) {
       try {
         for (const docUrl of user.verificationDocs) {
@@ -116,12 +100,9 @@ export async function DELETE(
           await deleteFromCloudinary(publicId);
         }
       } catch (error) {
-        console.error('Error deleting documents from Cloudinary:', error);
-        // Continue with user deletion even if Cloudinary deletion fails
+        console.error('Error deleting documents from Cloudinary:', error);
       }
-    }
-
-    // Delete profile picture if exists
+    }
     if (user.profilePicture) {
       try {
         const publicId = getPublicIdFromUrl(user.profilePicture);
@@ -129,9 +110,7 @@ export async function DELETE(
       } catch (error) {
         console.error('Error deleting profile picture from Cloudinary:', error);
       }
-    }
-
-    // Delete user from database
+    }
     await User.findByIdAndDelete(id);
 
     return successResponse({ userId: id }, 'User deleted successfully');

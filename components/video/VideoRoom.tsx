@@ -63,9 +63,7 @@ export default function VideoRoom({
   const socketRef = useRef<Socket | null>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
-  const remoteStreamRef = useRef<MediaStream | null>(null);
-
-  // Initialize WebRTC
+  const remoteStreamRef = useRef<MediaStream | null>(null);
   const initializeWebRTC = async () => {
     try {
       setStatusMsg('Requesting camera and microphone...');
@@ -85,23 +83,17 @@ export default function VideoRoom({
       localStreamRef.current = stream;
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
-      }
-
-      // Create peer connection
+      }
       const peerConnection = new RTCPeerConnection({
         iceServers: [
           { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] },
         ],
       });
 
-      peerConnectionRef.current = peerConnection;
-
-      // Add local stream tracks
+      peerConnectionRef.current = peerConnection;
       stream.getTracks().forEach(track => {
         peerConnection.addTrack(track, stream);
-      });
-
-      // Handle remote stream
+      });
       peerConnection.ontrack = (event) => {
         console.log('Remote track received:', event.track.kind);
         if (remoteStreamRef.current) {
@@ -112,9 +104,7 @@ export default function VideoRoom({
             remoteVideoRef.current.srcObject = remoteStreamRef.current;
           }
         }
-      };
-
-      // Handle ICE candidates
+      };
       peerConnection.onicecandidate = (event) => {
         if (event.candidate) {
           socketRef.current?.emit('ice-candidate', {
@@ -122,9 +112,7 @@ export default function VideoRoom({
             candidate: event.candidate,
           });
         }
-      };
-
-      // Handle connection state changes
+      };
       peerConnection.onconnectionstatechange = () => {
         console.log('Connection state:', peerConnection.connectionState);
         switch (peerConnection.connectionState) {
@@ -155,9 +143,7 @@ export default function VideoRoom({
       setError(errorMsg);
       toast.error(errorMsg);
     }
-  };
-
-  // Initialize Socket.IO
+  };
   useEffect(() => {
     const socket = io(signalingUrl, {
       reconnection: true,
@@ -264,14 +250,10 @@ export default function VideoRoom({
     return () => {
       socket.disconnect();
     };
-  }, [sessionId, role, displayName, signalingUrl]);
-
-  // Initialize media on mount
+  }, [sessionId, role, displayName, signalingUrl]);
   useEffect(() => {
     initializeWebRTC();
-  }, []);
-
-  // Handle early start
+  }, []);
   const handleEarlyStart = async () => {
     if (role !== 'initiator') {
       toast.error('Only alumni can start the call');
@@ -289,9 +271,7 @@ export default function VideoRoom({
         offer,
       });
     }
-  };
-
-  // Toggle audio
+  };
   const toggleAudio = () => {
     if (localStreamRef.current) {
       const audioTracks = localStreamRef.current.getAudioTracks();
@@ -300,9 +280,7 @@ export default function VideoRoom({
       });
       setIsMuted(!isMuted);
     }
-  };
-
-  // Toggle video
+  };
   const toggleVideo = () => {
     if (localStreamRef.current) {
       const videoTracks = localStreamRef.current.getVideoTracks();
@@ -311,9 +289,7 @@ export default function VideoRoom({
       });
       setIsCameraOff(!isCameraOff);
     }
-  };
-
-  // End call
+  };
   const endCall = () => {
     socketRef.current?.emit('end-call', { sessionId });
 
@@ -328,9 +304,7 @@ export default function VideoRoom({
     setPhase('ended');
     setStatusMsg('Call ended');
     onCallEnd?.();
-  };
-
-  // Send chat message
+  };
   const sendChatMessage = () => {
     if (!chatInput.trim()) return;
 
@@ -348,9 +322,7 @@ export default function VideoRoom({
       timestamp: Date.now(),
     });
     setChatInput('');
-  };
-
-  // Timer effect
+  };
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date().getTime();
@@ -374,9 +346,9 @@ export default function VideoRoom({
 
   return (
     <div className="w-full h-screen bg-black flex flex-col">
-      {/* Video Container */}
+      {}
       <div className="flex-1 relative overflow-hidden">
-        {/* Remote Video */}
+        {}
         <video
           ref={remoteVideoRef}
           autoPlay
@@ -384,7 +356,7 @@ export default function VideoRoom({
           className="w-full h-full object-cover"
         />
 
-        {/* Local Video (Picture in Picture) */}
+        {}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -399,7 +371,7 @@ export default function VideoRoom({
           />
         </motion.div>
 
-        {/* Status Overlay */}
+        {}
         {phase !== 'live' && (
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="text-center text-white">
@@ -410,14 +382,14 @@ export default function VideoRoom({
           </div>
         )}
 
-        {/* Timer */}
+        {}
         {phase === 'live' && (
           <div className="absolute top-4 left-4 bg-black bg-opacity-70 text-white px-4 py-2 rounded-lg font-mono">
             {timeRemaining}
           </div>
         )}
 
-        {/* Remote Name */}
+        {}
         {phase === 'live' && (
           <div className="absolute top-4 right-4 bg-black bg-opacity-70 text-white px-4 py-2 rounded-lg">
             {remoteDisplayName}
@@ -425,10 +397,10 @@ export default function VideoRoom({
         )}
       </div>
 
-      {/* Controls */}
+      {}
       <div className="bg-gray-900 border-t border-gray-700 p-4">
         <div className="flex items-center justify-center gap-4">
-          {/* Mute Button */}
+          {}
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
@@ -442,7 +414,7 @@ export default function VideoRoom({
             {isMuted ? <MicOff size={24} /> : <Mic size={24} />}
           </motion.button>
 
-          {/* Camera Button */}
+          {}
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
@@ -456,7 +428,7 @@ export default function VideoRoom({
             {isCameraOff ? <VideoOff size={24} /> : <Video size={24} />}
           </motion.button>
 
-          {/* Chat Button */}
+          {}
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
@@ -474,7 +446,7 @@ export default function VideoRoom({
             )}
           </motion.button>
 
-          {/* Early Start Button (Alumni only) */}
+          {}
           {role === 'initiator' && phase === 'waiting' && (
             <motion.button
               whileHover={{ scale: 1.1 }}
@@ -486,7 +458,7 @@ export default function VideoRoom({
             </motion.button>
           )}
 
-          {/* End Call Button */}
+          {}
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
@@ -498,7 +470,7 @@ export default function VideoRoom({
         </div>
       </div>
 
-      {/* Chat Panel */}
+      {}
       {showChat && (
         <motion.div
           initial={{ x: 400 }}
@@ -506,7 +478,7 @@ export default function VideoRoom({
           exit={{ x: 400 }}
           className="absolute right-0 top-0 bottom-0 w-80 bg-gray-900 border-l border-gray-700 flex flex-col"
         >
-          {/* Chat Header */}
+          {}
           <div className="flex items-center justify-between p-4 border-b border-gray-700">
             <h3 className="font-semibold text-white">Chat</h3>
             <button
@@ -517,7 +489,7 @@ export default function VideoRoom({
             </button>
           </div>
 
-          {/* Messages */}
+          {}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {chatMessages.map((msg, idx) => (
               <div
@@ -540,7 +512,7 @@ export default function VideoRoom({
             ))}
           </div>
 
-          {/* Input */}
+          {}
           <div className="p-4 border-t border-gray-700 flex gap-2">
             <input
               type="text"

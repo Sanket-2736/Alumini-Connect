@@ -55,22 +55,17 @@ export default function ProfilePage() {
 
   useEffect(() => {
     const loadProfile = async () => {
-      try {
-        // Load user profile
+      try {
         const profileResponse = await fetch(`/api/user/profile/${userId}`);
         if (profileResponse.ok) {
           const profileData = await profileResponse.json();
           setProfileUser(profileData.data?.user || profileData.user);
-        }
-
-        // Load connection count
+        }
         const countResponse = await fetch(`/api/connections/count/${userId}`);
         if (countResponse.ok) {
           const countData = await countResponse.json();
           setConnectionCount(countData.data?.count || 0);
-        }
-
-        // Load connection status (if not viewing own profile)
+        }
         if (currentUser && currentUser._id !== userId) {
           const connectionResponse = await fetch(`/api/connections/status/${userId}`);
           if (connectionResponse.ok) {
@@ -196,7 +191,7 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Profile Header */}
+      {}
       <div className="bg-white shadow rounded-lg p-6 mb-6">
         <div className="flex items-start justify-between">
           <div className="flex items-center">
@@ -234,9 +229,9 @@ export default function ProfilePage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Content */}
+        {}
         <div className="lg:col-span-2 space-y-6">
-          {/* Bio */}
+          {}
           {profileUser.bio && (
             <div className="bg-white shadow rounded-lg p-6">
               <h2 className="text-lg font-medium text-gray-900 mb-4">About</h2>
@@ -244,7 +239,7 @@ export default function ProfilePage() {
             </div>
           )}
 
-          {/* Work Experience */}
+          {}
           {profileUser.workDetails && (
             <div className="bg-white shadow rounded-lg p-6">
               <h2 className="text-lg font-medium text-gray-900 mb-4">Work Experience</h2>
@@ -260,7 +255,7 @@ export default function ProfilePage() {
             </div>
           )}
 
-          {/* Skills */}
+          {}
           {profileUser.skills.length > 0 && (
             <div className="bg-white shadow rounded-lg p-6">
               <h2 className="text-lg font-medium text-gray-900 mb-4">Skills</h2>
@@ -278,9 +273,9 @@ export default function ProfilePage() {
           )}
         </div>
 
-        {/* Sidebar */}
+        {}
         <div className="space-y-6">
-          {/* Education */}
+          {}
           <div className="bg-white shadow rounded-lg p-6">
             <h2 className="text-lg font-medium text-gray-900 mb-4">Education</h2>
             <div className="space-y-2">
@@ -290,7 +285,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Social Links */}
+          {}
           {profileUser.socialLinks && (
             <div className="bg-white shadow rounded-lg p-6">
               <h2 className="text-lg font-medium text-gray-900 mb-4">Connect</h2>
@@ -338,7 +333,7 @@ export default function ProfilePage() {
             </div>
           )}
 
-          {/* Verification Status */}
+          {}
           {isOwnProfile && (
             <div className="bg-white shadow rounded-lg p-6">
               <h2 className="text-lg font-medium text-gray-900 mb-4">Verification Status</h2>

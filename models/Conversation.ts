@@ -17,8 +17,7 @@ export interface IConversation extends Document {
   type: ConversationType;
   lastMessage?: mongoose.Types.ObjectId;
   lastActivity: Date;
-  unreadCounts: Map<string, number>;
-  // Group-only fields
+  unreadCounts: Map<string, number>;
   name?: string;
   description?: string;
   groupAvatar?: string;
@@ -42,8 +41,7 @@ const conversationSchema = new Schema<IConversation>(
     },
     lastMessage: { type: Schema.Types.ObjectId, ref: 'Message' },
     lastActivity: { type: Date, default: Date.now, required: true },
-    unreadCounts: { type: Map, of: Number, default: new Map() },
-    // Group fields
+    unreadCounts: { type: Map, of: Number, default: new Map() },
     name: { type: String, trim: true, maxlength: 100 },
     description: { type: String, trim: true, maxlength: 500 },
     groupAvatar: { type: String },

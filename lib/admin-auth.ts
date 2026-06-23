@@ -1,7 +1,4 @@
-/**
- * Admin authentication utilities
- * Uses environment variables for credentials
- */
+
 
 export function verifyAdminToken(token: string): boolean {
   try {

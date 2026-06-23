@@ -103,11 +103,8 @@ export default function ProfilePage() {
 
   const handleSave = async () => {
     setIsSaving(true);
-    try {
-      // Clean up empty fields before sending
-      const dataToSend: any = { ...editForm };
-
-      // Only include workDetails if at least one field is filled
+    try {
+      const dataToSend: any = { ...editForm };
       if (
         dataToSend.workDetails &&
         !dataToSend.workDetails.company &&
@@ -115,9 +112,7 @@ export default function ProfilePage() {
         dataToSend.workDetails.experienceYears === 0
       ) {
         delete dataToSend.workDetails;
-      }
-
-      // Only include socialLinks if at least one field is filled
+      }
       if (
         dataToSend.socialLinks &&
         !dataToSend.socialLinks.linkedin &&
@@ -193,7 +188,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Avatar Section */}
+          {}
           <div className="md:col-span-1">
             <div className="text-center">
               {isEditing ? (
@@ -228,9 +223,9 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Profile Details */}
+          {}
           <div className="md:col-span-2 space-y-6">
-            {/* Basic Info */}
+            {}
             <div>
               <label className="block text-sm font-medium text-gray-700">Full Name</label>
               {isEditing ? (
@@ -279,7 +274,7 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Bio */}
+            {}
             <div>
               <label className="block text-sm font-medium text-gray-700">Bio</label>
               {isEditing ? (
@@ -294,7 +289,7 @@ export default function ProfilePage() {
               )}
             </div>
 
-            {/* Work Details */}
+            {}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Work Details</label>
               {isEditing ? (
@@ -342,7 +337,7 @@ export default function ProfilePage() {
               )}
             </div>
 
-            {/* Skills */}
+            {}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Skills</label>
               {isEditing ? (
@@ -388,7 +383,7 @@ export default function ProfilePage() {
               )}
             </div>
 
-            {/* Social Links */}
+            {}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Social Links</label>
               {isEditing ? (

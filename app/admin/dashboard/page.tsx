@@ -86,7 +86,7 @@ export default function AdminDashboard() {
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Dashboard</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Total Users */}
+        {}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -103,7 +103,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Verified Users */}
+        {}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -120,7 +120,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Pending Verifications */}
+        {}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -137,7 +137,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Total Universities */}
+        {}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -154,7 +154,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Total Posts */}
+        {}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -171,7 +171,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Total Jobs */}
+        {}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>

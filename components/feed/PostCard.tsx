@@ -68,7 +68,7 @@ export default function PostCard({ post, onUpdate }: PostCardProps) {
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
-      {/* Header */}
+      {}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-start gap-3">
           <img
@@ -88,7 +88,7 @@ export default function PostCard({ post, onUpdate }: PostCardProps) {
           </div>
         </div>
 
-        {/* Type badge */}
+        {}
         {post.type === 'announcement' && (
           <span className="inline-block bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-medium">
             📣 Announcement
@@ -101,7 +101,7 @@ export default function PostCard({ post, onUpdate }: PostCardProps) {
         )}
       </div>
 
-      {/* Content */}
+      {}
       <div className="mb-4">
         <p className={`text-gray-800 ${!expanded && post.content.length > 200 ? 'line-clamp-3' : ''}`}>
           {post.content}
@@ -116,7 +116,7 @@ export default function PostCard({ post, onUpdate }: PostCardProps) {
         )}
       </div>
 
-      {/* Images Grid */}
+      {}
       {post.images.length > 0 && (
         <div className="mb-4 grid gap-1 grid-cols-2 md:grid-cols-3">
           {post.images.slice(0, 3).map((img: string, idx: number) => (
@@ -130,7 +130,7 @@ export default function PostCard({ post, onUpdate }: PostCardProps) {
         </div>
       )}
 
-      {/* Tags */}
+      {}
       {post.tags.length > 0 && (
         <div className="mb-4 flex flex-wrap gap-2">
           {post.tags.map((tag: string) => (
@@ -141,7 +141,7 @@ export default function PostCard({ post, onUpdate }: PostCardProps) {
         </div>
       )}
 
-      {/* Actions Bar */}
+      {}
       <div className="flex items-center justify-between pt-4 border-t text-gray-600">
         <button
           onClick={handleLike}

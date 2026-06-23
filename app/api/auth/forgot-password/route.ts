@@ -7,38 +7,24 @@ import { generatePasswordResetToken } from '@/lib/jwt';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 import { forgotPasswordSchema } from '@/lib/validations';
 
-/**
- * POST /api/auth/forgot-password
- * Send password reset email
- */
+
 export async function POST(request: NextRequest) {
-  try {
-    // Parse and validate request body
+  try {
     const body = await request.json();
-    const { email } = forgotPasswordSchema.parse(body);
-
-    // Connect to database
-    await connectToDatabase();
-
-    // Find user
+    const { email } = forgotPasswordSchema.parse(body);
+    await connectToDatabase();
     const user = await User.findOne({ email });
-    if (!user) {
-      // Don't reveal if email exists or not for security
+    if (!user) {
       return successResponse({ message: 'If an account with this email exists, a password reset link has been sent.' });
-    }
-
-    // Generate reset token
+    }
     const resetToken = generatePasswordResetToken(user._id.toString());
     user.passwordResetToken = resetToken;
     user.passwordResetExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
-    await user.save();
-
-    // Send reset email
+    await user.save();
     try {
       await sendPasswordReset(user.email, resetToken);
     } catch (emailError) {
-      console.error('Failed to send password reset email:', emailError);
-      // Don't fail the request if email fails
+      console.error('Failed to send password reset email:', emailError);
     }
 
     return successResponse({ message: 'If an account with this email exists, a password reset link has been sent.' });

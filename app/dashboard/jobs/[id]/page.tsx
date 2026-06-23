@@ -27,8 +27,7 @@ export default function JobPage({ params }: { params: { id: string } }) {
 
         setJob(data);
 
-        if (user) {
-          // ✅ FIX: safe comparison (ObjectId vs string)
+        if (user) {
           const isApplied = data.applicants.some(
             (id) => id.toString() === user._id
           );

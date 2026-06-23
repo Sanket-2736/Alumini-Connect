@@ -399,7 +399,7 @@ export default function UniversitiesPage() {
                 key={uni._id}
                 className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
               >
-                {/* Card Header */}
+                {}
                 <div className="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-4 text-white flex items-center gap-3">
                   {uni.logoUrl ? (
                     <img
@@ -418,10 +418,10 @@ export default function UniversitiesPage() {
                   </div>
                 </div>
 
-                {/* Card Content */}
+                {}
                 <div className="px-6 py-4">
                   <div className="space-y-3 mb-4">
-                    {/* Location */}
+                    {}
                     <div>
                       <p className="text-xs text-gray-600 mb-1">Location:</p>
                       <p className="text-sm font-medium text-gray-900">
@@ -430,7 +430,7 @@ export default function UniversitiesPage() {
                       </p>
                     </div>
 
-                    {/* Stats */}
+                    {}
                     {(uni.totalStudents || uni.totalAlumni) && (
                       <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-200">
                         {(uni.totalStudents ?? 0) > 0 && (
@@ -448,14 +448,14 @@ export default function UniversitiesPage() {
                       </div>
                     )}
 
-                    {/* Description */}
+                    {}
                     {uni.description && (
                       <div className="pt-2 border-t border-gray-200">
                         <p className="text-xs text-gray-600 line-clamp-2">{uni.description}</p>
                       </div>
                     )}
 
-                    {/* Status */}
+                    {}
                     <div className="pt-2 border-t border-gray-200">
                       <span
                         className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
@@ -469,7 +469,7 @@ export default function UniversitiesPage() {
                     </div>
                   </div>
 
-                  {/* Quick Links */}
+                  {}
                   {uni.website && (
                     <div className="mb-4 pb-4 border-t border-gray-200 pt-4">
                       <a
@@ -484,7 +484,7 @@ export default function UniversitiesPage() {
                   )}
                 </div>
 
-                {/* Card Footer - Actions */}
+                {}
                 <div className="px-6 py-4 border-t border-gray-200 flex gap-2">
                   <button
                     onClick={() => handleToggleActive(uni._id, uni.isActive)}

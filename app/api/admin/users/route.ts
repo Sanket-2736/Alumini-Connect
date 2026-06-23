@@ -5,12 +5,8 @@ import University from '@/models/University';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 import { requireAdmin } from '@/lib/admin';
 
-/**
- * GET /api/admin/users
- * Get all users with optional filtering
- */
-export async function GET(request: NextRequest) {
-  // Check admin access
+
+export async function GET(request: NextRequest) {
   const adminCheck = requireAdmin(request);
   if (adminCheck) return adminCheck;
 

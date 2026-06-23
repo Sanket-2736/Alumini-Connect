@@ -18,10 +18,7 @@ export async function DELETE(
 
     const { id } = await context.params;   // ✅ fix
 
-  const messageId = id;
-
-
-    // Find and verify ownership
+  const messageId = id;
     const message = await Message.findById(messageId);
 
     if (!message) {
@@ -34,9 +31,7 @@ export async function DELETE(
 
     if (message.isDeleted) {
       return NextResponse.json({ error: 'Message already deleted' }, { status: 400 });
-    }
-
-    // Soft delete the message
+    }
     await Message.findByIdAndUpdate(messageId, {
       isDeleted: true,
       deletedAt: new Date(),

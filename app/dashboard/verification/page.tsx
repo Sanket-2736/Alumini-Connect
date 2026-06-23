@@ -45,9 +45,7 @@ export default function VerificationPage() {
     if (fileArray.length > 3) {
       setError('Maximum 3 documents allowed');
       return;
-    }
-
-    // Validate file types and sizes
+    }
     const validTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
     const maxSize = 5 * 1024 * 1024; // 5MB
 
@@ -88,8 +86,7 @@ export default function VerificationPage() {
 
       const data = await response.json();
 
-      if (response.ok) {
-        // Refresh user data
+      if (response.ok) {
         window.location.reload();
       } else {
         setError(data.error || 'Upload failed');

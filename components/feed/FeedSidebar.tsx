@@ -30,7 +30,7 @@ export default function FeedSidebar() {
 
   return (
     <div className="lg:col-span-1 space-y-6">
-      {/* Trending Tags */}
+      {}
       <div className="bg-white rounded-lg shadow-sm p-6">
         <h3 className="font-bold text-lg mb-4">🔥 Trending Tags</h3>
         <div className="flex flex-wrap gap-2">
@@ -46,7 +46,7 @@ export default function FeedSidebar() {
         </div>
       </div>
 
-      {/* Alumni Spotlight */}
+      {}
       <div className="bg-white rounded-lg shadow-sm p-6">
         <h3 className="font-bold text-lg mb-4">⭐ Alumni Spotlight</h3>
         <div className="space-y-4">
@@ -74,7 +74,7 @@ export default function FeedSidebar() {
         </div>
       </div>
 
-      {/* Upcoming Events */}
+      {}
       <div className="bg-white rounded-lg shadow-sm p-6">
         <h3 className="font-bold text-lg mb-4">📅 Upcoming Events</h3>
         <div className="text-gray-500 text-sm text-center py-8">

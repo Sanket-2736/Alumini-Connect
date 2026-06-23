@@ -7,10 +7,7 @@ import { successResponse, errorResponse } from '@/lib/apiResponse';
 import { createNotification } from '@/lib/services/notificationService';
 import { NotificationType } from '@/models/Notification';
 
-/**
- * PUT /api/connections/[id]/accept
- * Accept a connection request
- */
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -43,9 +40,7 @@ export async function PUT(
     }
 
     connection.status = ConnectionStatus.ACCEPTED;
-    await connection.save();
-
-    // Notify requester
+    await connection.save();
     await createNotification({
       recipientId: connection.requester.toString(),
       type: NotificationType.CONNECTION_ACCEPTED,

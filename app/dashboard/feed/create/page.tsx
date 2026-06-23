@@ -11,9 +11,7 @@ export default function CreatePostPage() {
   const [content, setContent] = useState('');
   const [category, setCategory] = useState('post');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  // Only alumni can create posts
+  const [error, setError] = useState('');
   if (user?.role !== UserRole.ALUMNI) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-8">
@@ -50,9 +48,7 @@ export default function CreatePostPage() {
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.message || 'Failed to create post');
-      }
-
-      // Redirect to feed
+      }
       router.push('/dashboard/feed');
     } catch (err: any) {
       setError(err.message || 'Failed to create post');
@@ -67,7 +63,7 @@ export default function CreatePostPage() {
         <h1 className="text-2xl font-bold text-gray-900 mb-6">Create a Post</h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Category Selection */}
+          {}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Post Category
@@ -90,7 +86,7 @@ export default function CreatePostPage() {
             </p>
           </div>
 
-          {/* Content */}
+          {}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Post Content
@@ -107,14 +103,14 @@ export default function CreatePostPage() {
             </p>
           </div>
 
-          {/* Error Message */}
+          {}
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <p className="text-red-700 text-sm">{error}</p>
             </div>
           )}
 
-          {/* Action Buttons */}
+          {}
           <div className="flex gap-3 justify-end">
             <button
               type="button"
@@ -133,7 +129,7 @@ export default function CreatePostPage() {
           </div>
         </form>
 
-        {/* Info Box */}
+        {}
         <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
           <h3 className="font-semibold text-blue-900 mb-2">📢 Your Post Will Notify</h3>
           <p className="text-blue-700 text-sm">

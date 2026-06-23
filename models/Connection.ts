@@ -38,12 +38,8 @@ const connectionSchema = new Schema<IConnection>(
   {
     timestamps: true,
   }
-);
-
-// Unique index to prevent duplicate connections between same users
-connectionSchema.index({ requester: 1, recipient: 1 }, { unique: true });
-
-// Compound index for efficient queries
+);
+connectionSchema.index({ requester: 1, recipient: 1 }, { unique: true });
 connectionSchema.index({ status: 1, updatedAt: -1 });
 
 const Connection = mongoose.models.Connection || mongoose.model<IConnection>('Connection', connectionSchema);

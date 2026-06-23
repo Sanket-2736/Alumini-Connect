@@ -3,9 +3,7 @@ import Post from '@/models/Post';
 
 export async function GET() {
   try {
-    await connectDB();
-
-    // Get trending tags from last 7 days
+    await connectDB();
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
     const tags = await Post.aggregate([

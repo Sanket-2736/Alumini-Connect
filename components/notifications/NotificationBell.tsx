@@ -21,9 +21,7 @@ export default function NotificationBell() {
     useNotificationStore();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const panelRef = useRef<HTMLDivElement>(null);
-
-  // Close on outside click
+  const panelRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
@@ -33,9 +31,7 @@ export default function NotificationBell() {
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
-  }, [open]);
-
-  // Load unread count on mount
+  }, [open]);
   useEffect(() => {
     fetch('/api/notifications/unread-count')
       .then((r) => r.json())
@@ -78,7 +74,7 @@ export default function NotificationBell() {
 
   return (
     <div className="relative" ref={panelRef}>
-      {/* Bell button */}
+      {}
       <button
         onClick={handleOpen}
         className="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
@@ -94,10 +90,10 @@ export default function NotificationBell() {
         )}
       </button>
 
-      {/* Dropdown panel */}
+      {}
       {open && (
         <div className="absolute right-0 mt-2 w-96 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
-          {/* Header */}
+          {}
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
             <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
             {unreadCount > 0 && (
@@ -110,7 +106,7 @@ export default function NotificationBell() {
             )}
           </div>
 
-          {/* List */}
+          {}
           <div className="max-h-[480px] overflow-y-auto">
             {loading && notifications.length === 0 ? (
               <div className="flex justify-center py-8">
@@ -135,7 +131,7 @@ export default function NotificationBell() {
                     !n.isRead ? 'border-l-4 border-l-indigo-500 bg-indigo-50/40' : ''
                   }`}
                 >
-                  {/* Actor avatar */}
+                  {}
                   <div className="flex-shrink-0 mt-0.5">
                     {n.actor ? (
                       <img
@@ -152,7 +148,7 @@ export default function NotificationBell() {
                     )}
                   </div>
 
-                  {/* Content */}
+                  {}
                   <div className="flex-1 min-w-0">
                     <p className={`text-sm leading-snug ${!n.isRead ? 'font-semibold text-gray-900' : 'font-medium text-gray-800'}`}>
                       {n.title}
@@ -171,7 +167,7 @@ export default function NotificationBell() {
             )}
           </div>
 
-          {/* Footer */}
+          {}
           <div className="border-t border-gray-100 px-4 py-2.5">
             <button
               onClick={() => { setOpen(false); router.push('/dashboard/notifications'); }}

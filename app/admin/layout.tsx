@@ -16,15 +16,11 @@ export default function AdminLayout({
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
-    const role = localStorage.getItem('userRole');
-
-    // If on login page, don't check authentication
+    const role = localStorage.getItem('userRole');
     if (pathname === '/admin/login') {
       setIsLoading(false);
       return;
-    }
-
-    // For other admin pages, check authentication
+    }
     if (!token || role !== 'admin') {
       router.push('/admin/login');
     } else {
@@ -36,9 +32,7 @@ export default function AdminLayout({
   const handleLogout = () => {
     localStorage.clear();
     router.push('/admin/login');
-  };
-
-  // If on login page, just render children without layout
+  };
   if (pathname === '/admin/login') {
     return children;
   }
@@ -57,7 +51,7 @@ export default function AdminLayout({
 
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
+      {}
       <div className="w-64 bg-gray-900 text-white flex flex-col">
         <div className="p-6">
           <h1 className="text-2xl font-bold">Admin Panel</h1>
@@ -106,7 +100,7 @@ export default function AdminLayout({
         </div>
       </div>
 
-      {/* Main Content */}
+      {}
       <div className="flex-1 overflow-auto">
         <div className="p-8">
           {children}

@@ -37,9 +37,7 @@ export default function MessagesPage() {
   const activeConversation = conversations.find((c) => c._id === activeConversationId) || null;
   const activeMessages = activeConversationId ? messages.get(activeConversationId) || [] : [];
   const activeTypingUsers = activeConversationId ? typingUsers.get(activeConversationId) || [] : [];
-  const activeHasMore = activeConversationId ? hasMoreMessages.get(activeConversationId) ?? false : false;
-
-  // ─── Socket Setup ───────────────────────────────────────────────────────────
+  const activeHasMore = activeConversationId ? hasMoreMessages.get(activeConversationId) ?? false : false;
 
   useEffect(() => {
     if (!user || !accessToken) return;
@@ -87,14 +85,12 @@ export default function MessagesPage() {
       setOnline(data.userId, data.isOnline);
     });
 
-    socket.on('group:member_added', (data: { conversationId: string; addedUser: any }) => {
-      // Reload conversations to get updated member count
+    socket.on('group:member_added', (data: { conversationId: string; addedUser: any }) => {
       loadConversations();
     });
 
     socket.on('group:member_removed', (data: { conversationId: string; removedUserId: string }) => {
-      if (data.removedUserId === user._id) {
-        // We were removed — remove from list
+      if (data.removedUserId === user._id) {
         setConversations(conversations.filter((c) => c._id !== data.conversationId));
         if (activeConversationId === data.conversationId) {
           setActiveConversationId(null);
@@ -112,11 +108,8 @@ export default function MessagesPage() {
     });
 
     socketRef.current = socket;
-    return () => { socket.disconnect(); socketRef.current = null; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?._id, accessToken]);
-
-  // ─── Load Conversations ─────────────────────────────────────────────────────
+    return () => { socket.disconnect(); socketRef.current = null; };
+  }, [user?._id, accessToken]);
 
   const loadConversations = useCallback(async () => {
     try {
@@ -132,9 +125,7 @@ export default function MessagesPage() {
     if (!user) return;
     setLoadingConversations(true);
     loadConversations().finally(() => setLoadingConversations(false));
-  }, [user?._id]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // ─── Load Messages ──────────────────────────────────────────────────────────
+  }, [user?._id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadMessages = useCallback(async (conversationId: string, cursor?: string) => {
     const isPaginating = !!cursor;
@@ -159,9 +150,7 @@ export default function MessagesPage() {
       setHasMore(conversationId, data.hasMore ?? false);
     } catch (err) { console.error('Failed to load messages:', err); }
     finally { setLoadingMessages(false); setLoadingMore(false); }
-  }, [prependMessages, setMessages, setCursor, setHasMore]);
-
-  // ─── Select Conversation ────────────────────────────────────────────────────
+  }, [prependMessages, setMessages, setCursor, setHasMore]);
 
   const handleConversationSelect = useCallback(async (conversation: Conversation) => {
     setActiveConversationId(conversation._id);
@@ -242,7 +231,7 @@ export default function MessagesPage() {
 
   return (
     <div className="h-[calc(100vh-4rem)] flex bg-gray-50 overflow-hidden">
-      {/* ── Conversation List ───────────────────────────────────────────────── */}
+      {}
       <div className={`w-full md:w-80 bg-white border-r border-gray-200 flex flex-col flex-shrink-0 ${mobileView === 'chat' ? 'hidden md:flex' : 'flex'}`}>
         <div className="px-4 py-4 border-b border-gray-200">
           <div className="flex items-center justify-between mb-3">
@@ -279,7 +268,7 @@ export default function MessagesPage() {
         />
       </div>
 
-      {/* ── Chat Window ─────────────────────────────────────────────────────── */}
+      {}
       <div className={`flex-1 flex flex-col overflow-hidden ${mobileView === 'list' ? 'hidden md:flex' : 'flex'}`}>
         {activeConversation ? (
           loadingMessages ? (

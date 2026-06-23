@@ -15,9 +15,7 @@ export async function PUT(
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Check if admin/moderator
+    }
     const userDoc = await User.findById(user._id);
     if (userDoc?.role !== 'admin' && userDoc?.role !== 'moderator') {
       return NextResponse.json({ error: 'Only admins/moderators can pin posts' }, { status: 403 });
@@ -29,9 +27,7 @@ const postId = id;
 
     if (!post) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
-    }
-
-    // Toggle pin status
+    }
     post.isPinned = !post.isPinned;
     await post.save();
 

@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
 
-/* ================= ENUMS ================= */
+
 
 export enum JobType {
   FULL_TIME = 'full_time',
@@ -23,7 +23,7 @@ export enum JobStatus {
   EXPIRED = 'expired'
 }
 
-/* ================= TYPES ================= */
+
 
 export interface ISalary {
   min?: number;
@@ -58,7 +58,7 @@ export interface IJob extends Document {
   updatedAt: Date;
 }
 
-/* ================= SCHEMAS ================= */
+
 
 const salarySchema = new Schema<ISalary>({
   min: Number,
@@ -144,7 +144,7 @@ const jobSchema = new Schema<IJob>(
   }
 );
 
-/* ================= INDEXES ================= */
+
 
 jobSchema.index({
   title: 'text',
@@ -155,14 +155,10 @@ jobSchema.index({
 
 jobSchema.index({ status: 1, expiresAt: 1, createdAt: -1 });
 jobSchema.index({ postedBy: 1, createdAt: -1 });
-jobSchema.index({ type: 1, experienceLevel: 1 });
-
-// TTL index
+jobSchema.index({ type: 1, experienceLevel: 1 });
 jobSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
-/* ================= MIDDLEWARE ================= */
-
-// ✅ FIXED: async version (no next())
+
 jobSchema.pre('save', function () {
   if (!this.expiresAt) {
     const expiresAt = new Date();
@@ -171,7 +167,7 @@ jobSchema.pre('save', function () {
   }
 });
 
-/* ================= EXPORT ================= */
+
 
 export default mongoose.models.Job ||
   mongoose.model<IJob>('Job', jobSchema);

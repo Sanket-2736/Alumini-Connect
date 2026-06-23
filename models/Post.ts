@@ -71,11 +71,8 @@ const postSchema = new Schema<IPost>({
   }
 }, {
   timestamps: true
-});
-
-// Text index for search on content and tags
-postSchema.index({ content: 'text', tags: 'text' });
-// Index for sorting
+});
+postSchema.index({ content: 'text', tags: 'text' });
 postSchema.index({ isPinned: -1, createdAt: -1 });
 postSchema.index({ author: 1, createdAt: -1 });
 

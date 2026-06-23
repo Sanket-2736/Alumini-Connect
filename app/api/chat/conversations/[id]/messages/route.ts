@@ -24,9 +24,7 @@ export async function GET(
         { error: "Conversation not found" },
         { status: 404 }
       );
-    }
-
-    // Pagination
+    }
     const { searchParams } = new URL(request.url);
     const cursor = searchParams.get("cursor");
     const limit = 20;
@@ -76,9 +74,7 @@ export async function GET(
 
   const conversationId = id;
 ;
-      const { content, attachments, replyToId } = await request.json();
-
-      // Verify user is participant in conversation
+      const { content, attachments, replyToId } = await request.json();
       const conversation = await Conversation.findOne({
         _id: conversationId,
         participants: user._id
@@ -86,14 +82,10 @@ export async function GET(
 
       if (!conversation) {
         return NextResponse.json({ error: 'Conversation not found' }, { status: 404 });
-      }
-
-      // Validate input
+      }
       if (!content && (!attachments || attachments.length === 0)) {
         return NextResponse.json({ error: 'Message must have content or attachments' }, { status: 400 });
-      }
-
-      // Create message
+      }
       const message = new Message({
         conversationId,
         sender: user._id,
@@ -103,15 +95,11 @@ export async function GET(
         status: 'sent'
       });
 
-      await message.save();
-
-      // Update conversation's lastMessage and lastActivity
+      await message.save();
       await Conversation.findByIdAndUpdate(conversationId, {
         lastMessage: message._id,
         lastActivity: new Date()
-      });
-
-      // Populate sender info
+      });
       await message.populate('sender', 'fullName profilePicture');
 
       return NextResponse.json({

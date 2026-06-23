@@ -92,7 +92,7 @@ export default function ConversationList({
               isActive ? 'bg-indigo-50 border-l-4 border-l-indigo-500' : ''
             }`}
           >
-            {/* Avatar */}
+            {}
             <div className="relative flex-shrink-0">
               {isGroup ? (
                 <GroupAvatar name={displayName} avatarUrl={conv.groupAvatar} size="md" className="w-12 h-12 text-sm" />
@@ -110,7 +110,7 @@ export default function ConversationList({
               )}
             </div>
 
-            {/* Content */}
+            {}
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
                 <span className={`text-sm truncate ${conv.unreadCount > 0 ? 'font-semibold text-gray-900' : 'font-medium text-gray-800'}`}>

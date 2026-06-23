@@ -5,34 +5,23 @@ import University from '@/models/University';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 import { requireAdmin } from '@/lib/admin';
 
-/**
- * GET /api/admin/verifications
- * Get all pending user verifications
- */
-export async function GET(request: NextRequest) {
-  // Check admin access
+
+export async function GET(request: NextRequest) {
   const adminCheck = requireAdmin(request);
   if (adminCheck) return adminCheck;
 
   try {
-    await connectToDatabase();
-
-    // Get all users (including approved, rejected, pending, and not_submitted)
-    // This allows admin to view documents for any user
+    await connectToDatabase();
     const users = await User.find({})
       .select('_id fullName email university department batch role verificationDocs verificationStatus createdAt')
       .sort({ createdAt: -1 })
-      .lean();
-
-    // Get university names
+      .lean();
     const universityIds = [...new Set(users.map(u => u.university.toString()))];
     const universities = await University.find({ _id: { $in: universityIds } })
       .select('_id name')
       .lean();
 
-    const universityMap = new Map(universities.map(u => [u._id.toString(), u.name]));
-
-    // Format response
+    const universityMap = new Map(universities.map(u => [u._id.toString(), u.name]));
     const verifications = users.map((user) => ({
       userId: user._id.toString(),
       fullName: user.fullName,

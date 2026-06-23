@@ -59,8 +59,7 @@ export default function NotificationsPage() {
 
   useEffect(() => {
     setPage(1);
-    loadNotifications(activeTab, 1, false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    loadNotifications(activeTab, 1, false);
   }, [activeTab]);
 
   const handleClickNotification = async (n: AppNotification) => {
@@ -101,7 +100,7 @@ export default function NotificationsPage() {
         </button>
       </div>
 
-      {/* Tabs */}
+      {}
       <div className="flex space-x-1 mb-6 border-b border-gray-200">
         {TABS.map((tab) => (
           <button
@@ -118,7 +117,7 @@ export default function NotificationsPage() {
         ))}
       </div>
 
-      {/* List */}
+      {}
       <div className="space-y-1">
         {loading && notifications.length === 0 ? (
           <div className="flex justify-center py-12">

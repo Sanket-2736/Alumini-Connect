@@ -2,26 +2,30 @@ import { NextRequest } from 'next/server';
 import connectToDatabase from '@/lib/db';
 import VideoCallBooking, { CallStatus } from '@/models/VideoCallBooking';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
-import { requireAuth } from '@/lib/admin';
-import { v4 as uuidv4 } from 'uuid';
+import { verifyAccessToken } from '@/lib/jwt';
+import { v4 as uuidv4 } from 'uuid';
+function getAuthenticatedUser(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
+    return null;
+  }
 
-/**
- * GET /api/video-calls
- * Get user's video call bookings
- */
+  const token = authHeader.substring(7);
+  return verifyAccessToken(token);
+}
+
+
 export async function GET(request: NextRequest) {
-  try {
-    const authCheck = requireAuth(request);
-    if (authCheck) return authCheck;
+  try {
+    const decoded = getAuthenticatedUser(request);
+    if (!decoded) {
+      return errorResponse('Unauthorized', 401);
+    }
 
+    const userId = decoded.userId;
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
     const status = searchParams.get('status');
     const role = searchParams.get('role'); // 'alumni' or 'student'
-
-    if (!userId) {
-      return errorResponse('userId is required', 400);
-    }
 
     await connectToDatabase();
 
@@ -56,23 +60,20 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/**
- * POST /api/video-calls
- * Create a new video call booking (alumni only)
- */
+
 export async function POST(request: NextRequest) {
   try {
-    const authCheck = requireAuth(request);
-    if (authCheck) return authCheck;
+    const decoded = getAuthenticatedUser(request);
+    if (!decoded) {
+      return errorResponse('Unauthorized', 401);
+    }
 
     const body = await request.json();
     const { alumniId, studentId, scheduledStartTime, scheduledEndTime, title, description } = body;
 
     if (!alumniId || !studentId || !scheduledStartTime || !scheduledEndTime || !title) {
       return errorResponse('Missing required fields', 400);
-    }
-
-    // Validate times
+    }
     const startTime = new Date(scheduledStartTime);
     const endTime = new Date(scheduledEndTime);
 
@@ -99,9 +100,7 @@ export async function POST(request: NextRequest) {
       status: CallStatus.SCHEDULED,
     });
 
-    await booking.save();
-
-    // Populate references
+    await booking.save();
     await booking.populate('alumniId', 'fullName profilePicture');
     await booking.populate('studentId', 'fullName profilePicture');
 

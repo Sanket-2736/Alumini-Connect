@@ -92,25 +92,17 @@ const messageSchema = new Schema<IMessage>({
   deletedAt: Date
 }, {
   timestamps: true
-});
-
-// Indexes for efficient queries
+});
 messageSchema.index({ conversationId: 1, createdAt: -1 }); // For message history pagination
 messageSchema.index({ sender: 1, status: 1 }); // For status updates
-messageSchema.index({ conversationId: 1, status: 1 }); // For unread counts
-
-// Pre-save middleware to update conversation unread counts
+messageSchema.index({ conversationId: 1, status: 1 }); // For unread counts
 messageSchema.post('save', async function(doc) {
   try {
-    const Conversation = mongoose.model('Conversation');
-
-    // Update unread counts for all participants except sender
+    const Conversation = mongoose.model('Conversation');
     const conversation = await Conversation.findById(doc.conversationId);
     if (conversation) {
       const participants = conversation.participants.map((id: mongoose.Types.ObjectId) => id.toString());
-      const senderId = doc.sender.toString();
-
-      // Increment unread count for all participants except sender
+      const senderId = doc.sender.toString();
       const updateOps: Record<string, number> = {};
       participants.forEach((participantId: string) => {
         if (participantId !== senderId) {

@@ -3,9 +3,7 @@ import { getUserFromRequest } from '@/lib/auth';
 import connectDB from '@/lib/mongodb';
 import Notification from '@/models/Notification';
 
-type Params = { params: Promise<{ id: string }> };
-
-// DELETE /api/notifications/[id]
+type Params = { params: Promise<{ id: string }> };
 export async function DELETE(request: NextRequest, { params }: Params) {
   try {
     await connectDB();

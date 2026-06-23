@@ -23,9 +23,7 @@ const jobId = id;
 
     if (!job) {
       return NextResponse.json({ error: 'Job not found' }, { status: 404 });
-    }
-
-    // Check authorization (only poster can view applicants)
+    }
     if (job.postedBy.toString() !== user._id.toString()) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }

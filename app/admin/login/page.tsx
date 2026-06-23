@@ -17,8 +17,7 @@ export default function AdminLoginPage() {
     setError('');
     setIsLoading(true);
 
-    try {
-      // Check credentials against environment variables
+    try {
       const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'admin@example.com';
       const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'Admin@12345';
 
@@ -26,9 +25,7 @@ export default function AdminLoginPage() {
         setError('Invalid email or password');
         setIsLoading(false);
         return;
-      }
-
-      // Create token by calling backend
+      }
       const response = await fetch('/api/admin/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -51,23 +48,17 @@ export default function AdminLoginPage() {
         return;
       }
 
-      const token = responseData.data.token;
-
-      // Store token and credentials
+      const token = responseData.data.token;
       localStorage.setItem('accessToken', token);
       localStorage.setItem('userRole', 'admin');
-      localStorage.setItem('adminEmail', adminEmail);
-
-      // Debug: Log token creation
+      localStorage.setItem('adminEmail', adminEmail);
       console.log('✅ Admin login successful');
       console.log('📝 Token stored:', token.substring(0, 20) + '...');
       console.log('💾 LocalStorage contents:', {
         accessToken: localStorage.getItem('accessToken')?.substring(0, 20) + '...',
         userRole: localStorage.getItem('userRole'),
         adminEmail: localStorage.getItem('adminEmail'),
-      });
-
-      // Redirect to dashboard
+      });
       router.push('/admin/dashboard');
     } catch (err: any) {
       console.error('Login error:', err);

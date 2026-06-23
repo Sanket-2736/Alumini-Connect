@@ -15,9 +15,7 @@ cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-// POST /api/chat/groups — create a group
+});
 export async function POST(request: NextRequest) {
   try {
     await connectDB();
@@ -51,15 +49,11 @@ export async function POST(request: NextRequest) {
 
     if (allMemberIds.length > 500) {
       return NextResponse.json({ error: 'Maximum 500 members allowed' }, { status: 400 });
-    }
-
-    // Validate members exist
+    }
     const members = await User.find({ _id: { $in: allMemberIds }, isBanned: false }).select('_id');
     if (members.length !== allMemberIds.length) {
       return NextResponse.json({ error: 'One or more members not found' }, { status: 400 });
-    }
-
-    // Upload avatar if provided
+    }
     let groupAvatar: string | undefined;
     if (avatarFile && avatarFile.size > 0) {
       const bytes = await avatarFile.arrayBuffer();
@@ -88,9 +82,7 @@ export async function POST(request: NextRequest) {
       groupType: groupType as GroupType,
       inviteLink: nanoid(12),
       lastActivity: new Date(),
-    });
-
-    // Notify added members (except creator)
+    });
     const otherMembers = allMemberIds.filter((id) => id !== user._id.toString());
     await Promise.all(
       otherMembers.map((memberId) =>

@@ -5,10 +5,7 @@ import { getUserFromRequest } from '@/lib/auth';
 import { ConnectionStatus } from '@/models/Connection';
 import { successResponse, errorResponse } from '@/lib/apiResponse';
 
-/**
- * GET /api/connections/my
- * Get user's connections with optional status filter
- */
+
 export async function GET(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request);
@@ -23,9 +20,7 @@ export async function GET(request: NextRequest) {
 
     const skip = (page - 1) * limit;
 
-    await connectToDatabase();
-
-    // Build query based on status
+    await connectToDatabase();
     let query: any = {};
 
     if (status === 'pending_received') {
@@ -45,20 +40,15 @@ export async function GET(request: NextRequest) {
           { recipient: user._id, status: ConnectionStatus.ACCEPTED },
         ],
       };
-    } else {
-      // Get all connections for the user
+    } else {
       query = {
         $or: [
           { requester: user._id },
           { recipient: user._id },
         ],
       };
-    }
-
-    // Get total count
-    const total = await Connection.countDocuments(query);
-
-    // Get connections with pagination
+    }
+    const total = await Connection.countDocuments(query);
     const connections = await Connection.find(query)
       .populate({
         path: 'requester',
@@ -72,9 +62,7 @@ export async function GET(request: NextRequest) {
       })
       .sort({ updatedAt: -1 })
       .skip(skip)
-      .limit(limit);
-
-    // Format response to include the other user in each connection
+      .limit(limit);
     const formattedConnections = connections.map(conn => {
       const isRequester = conn.requester._id.toString() === user._id.toString();
       const otherUser = isRequester ? conn.recipient : conn.requester;
