@@ -42,6 +42,7 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
   const [editForm, setEditForm] = useState({
     fullName: '',
     bio: '',
@@ -61,13 +62,19 @@ export default function ProfilePage() {
   });
 
   useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+
     if (!accessToken) {
-      router.push('/login');
+      router.push('/unauthorized');
       return;
     }
 
     fetchProfile();
-  }, [accessToken, router]);
+  }, [isHydrated, accessToken, router]);
 
   const fetchProfile = async () => {
     try {
@@ -103,8 +110,10 @@ export default function ProfilePage() {
 
   const handleSave = async () => {
     setIsSaving(true);
-    try {
-      const dataToSend: any = { ...editForm };
+    try {
+
+      const dataToSend: any = { ...editForm };
+
       if (
         dataToSend.workDetails &&
         !dataToSend.workDetails.company &&
@@ -112,7 +121,8 @@ export default function ProfilePage() {
         dataToSend.workDetails.experienceYears === 0
       ) {
         delete dataToSend.workDetails;
-      }
+      }
+
       if (
         dataToSend.socialLinks &&
         !dataToSend.socialLinks.linkedin &&
@@ -165,7 +175,21 @@ export default function ProfilePage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isHydrated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
       </div>
     );
   }

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import { getUserFromRequest } from '@/lib/auth';
-import Job from '@/models/Job'; // ✅ correct model
+import Job from '@/models/Job';
 import { Types } from 'mongoose';
 
 export async function POST(
@@ -21,7 +21,8 @@ export async function POST(
     const job = await Job.findById(id);
     if (!job) {
       return NextResponse.json({ error: 'Job not found' }, { status: 404 });
-    }
+    }
+
     const alreadyApplied = job.applicants.some(
       (applicantId: Types.ObjectId) =>
         applicantId.toString() === user._id.toString()

@@ -25,59 +25,44 @@ const publicRoutes = [
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  console.log(`\n🔍 [MIDDLEWARE] Processing request: ${request.method} ${pathname}`);
-
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
   const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
 
-  console.log(`  - Protected: ${isProtectedRoute}, Public: ${isPublicRoute}`);
-
   if (!isProtectedRoute || isPublicRoute) {
-    console.log(`  ✅ Route is public/unprotected, skipping token check`);
     return NextResponse.next();
-  }
+  }
+
   let authHeader = request.headers.get('authorization');
   let token: string | null = null;
 
   if (authHeader && authHeader.startsWith('Bearer ')) {
     token = authHeader.substring(7);
-    console.log(`  - Token from Authorization header`);
-  } else {
+  } else {
     const refreshToken = request.cookies.get('refreshToken')?.value;
     if (refreshToken) {
       token = refreshToken;
-      console.log(`  - Token from refresh token cookie`);
     }
   }
 
-  console.log(`  - Auth header present: ${!!authHeader}, Token present: ${!!token}`);
-
   if (!token) {
-    console.log(`  ❌ Missing authorization header and refresh token`);
     return NextResponse.json(
       { success: false, message: 'Access token required' },
       { status: 401 }
     );
-  }
-  let payload = verifyAccessToken(token);
-  if (!payload) {
-    payload = verifyRefreshToken(token);
-    if (payload) {
-      console.log(`  - Access token invalid, but refresh token valid`);
-    }
   }
 
-  console.log(`  - Token verified: ${!!payload}`);
+  let payload = verifyAccessToken(token);
 
   if (!payload) {
-    console.log(`  ❌ Invalid or expired token`);
+    payload = verifyRefreshToken(token);
+  }
+
+  if (!payload) {
     return NextResponse.json(
       { success: false, message: 'Invalid or expired access token' },
       { status: 401 }
     );
   }
-
-  console.log(`  - Payload: email=${payload.email}, role=${payload.role}`);
 
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-user-id', payload.userId);
@@ -85,14 +70,12 @@ export function proxy(request: NextRequest) {
   requestHeaders.set('x-user-role', payload.role);
 
   if (pathname.startsWith('/api/admin') && !['admin', 'moderator'].includes(payload.role)) {
-    console.log(`  ❌ User role ${payload.role} is not admin/moderator`);
     return NextResponse.json(
       { success: false, message: 'Insufficient permissions' },
       { status: 403 }
     );
   }
 
-  console.log(`  ✅ Request authorized, proceeding`);
   return NextResponse.next({
     request: { headers: requestHeaders },
   });

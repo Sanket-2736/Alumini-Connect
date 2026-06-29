@@ -9,14 +9,18 @@ import { loginSchema } from '@/lib/validations';
 
 
 export async function POST(request: NextRequest) {
-  try {
+  try {
+
     const body = await request.json();
-    const { email, password } = loginSchema.parse(body);
-    await connectToDatabase();
+    const { email, password } = loginSchema.parse(body);
+
+    await connectToDatabase();
+
     const user = await User.findOne({ email }).select('+passwordHash');
     if (!user) {
       return errorResponse('Invalid email or password', 401);
-    }
+    }
+
     if (user.verificationStatus !== 'approved') {
       if (user.verificationStatus === 'pending') {
         return errorResponse('Your account is pending admin verification. Please wait.', 401);
@@ -25,14 +29,17 @@ export async function POST(request: NextRequest) {
       } else {
         return errorResponse('Please upload your verification documents to complete registration', 401);
       }
-    }
+    }
+
     if (user.isBanned) {
       return errorResponse('Your account has been banned', 403);
-    }
+    }
+
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) {
       return errorResponse('Invalid email or password', 401);
-    }
+    }
+
     const payload = {
       userId: user._id.toString(),
       email: user.email,
@@ -40,21 +47,24 @@ export async function POST(request: NextRequest) {
     };
 
     const accessToken = generateAccessToken(payload);
-    const refreshToken = generateRefreshToken(payload);
+    const refreshToken = generateRefreshToken(payload);
+
     const hashedRefreshToken = await bcrypt.hash(refreshToken, 12);
     user.refreshTokens.push(hashedRefreshToken);
-    await user.save();
+    await user.save();
+
     const response = successResponse({
       accessToken,
       user: {
-        id: user._id,
+        _id: user._id.toString(),
         fullName: user.fullName,
         email: user.email,
         role: user.role,
         profilePicture: user.profilePicture,
-        verificationStatus: user.verificationStatus,
+        isEmailVerified: user.isEmailVerified,
       },
-    });
+    });
+
     response.cookies.set('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

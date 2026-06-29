@@ -145,6 +145,8 @@ if (typeof window !== 'undefined') {
   const { accessToken } = useAuthStore.getState();
 
   if (accessToken) {
-    useAuthStore.getState().refreshToken().catch(() => {});
+    useAuthStore.getState().refreshToken().catch(() => {
+      // Silently fail on initial refresh - user may just have a valid token
+    });
   }
 }

@@ -16,7 +16,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = await context.params;   // ✅ fix
+    const { id } = await context.params;
 
   const messageId = id;
 
@@ -24,7 +24,8 @@ export async function POST(
 
     if (!emoji) {
       return NextResponse.json({ error: 'Emoji is required' }, { status: 400 });
-    }
+    }
+
     const message = await Message.findById(messageId);
 
     if (!message) {
@@ -33,15 +34,18 @@ export async function POST(
 
     if (message.isDeleted) {
       return NextResponse.json({ error: 'Cannot react to deleted message' }, { status: 400 });
-    }
+    }
+
     const existingReactionIndex = message.reactions.findIndex(
       (reaction: { userId: { toString(): string }; emoji: string }) =>
         reaction.userId.toString() === user._id.toString() && reaction.emoji === emoji
     );
 
-    if (existingReactionIndex >= 0) {
+    if (existingReactionIndex >= 0) {
+
       message.reactions.splice(existingReactionIndex, 1);
-    } else {
+    } else {
+
       message.reactions.push({
         userId: user._id,
         emoji

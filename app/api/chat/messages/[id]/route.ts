@@ -16,9 +16,10 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = await context.params;   // ✅ fix
+    const { id } = await context.params;
 
-  const messageId = id;
+  const messageId = id;
+
     const message = await Message.findById(messageId);
 
     if (!message) {
@@ -31,7 +32,8 @@ export async function DELETE(
 
     if (message.isDeleted) {
       return NextResponse.json({ error: 'Message already deleted' }, { status: 400 });
-    }
+    }
+
     await Message.findByIdAndUpdate(messageId, {
       isDeleted: true,
       deletedAt: new Date(),

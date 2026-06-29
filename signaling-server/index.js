@@ -41,8 +41,6 @@ app.get('/room-status', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  console.log(`[Socket] User connected: ${socket.id}`);
-
   socket.on('join-room', (data) => {
     const { sessionId, role, displayName, userId } = data;
 
@@ -67,7 +65,6 @@ io.on('connection', (socket) => {
     });
 
     socket.join(sessionId);
-    console.log(`[Room] ${displayName} (${role}) joined ${sessionId}`);
 
     socket.to(sessionId).emit('user-joined', {
       userId: socket.id,
@@ -92,7 +89,6 @@ io.on('connection', (socket) => {
       from: socket.id,
       offer,
     });
-    console.log(`[Call] Offer sent in room ${sessionId}`);
   });
 
   socket.on('call-accepted', (data) => {
@@ -101,7 +97,6 @@ io.on('connection', (socket) => {
       from: socket.id,
       answer,
     });
-    console.log(`[Call] Answer sent in room ${sessionId}`);
   });
 
   socket.on('ice-candidate', (data) => {
@@ -119,7 +114,6 @@ io.on('connection', (socket) => {
       message,
       timestamp,
     });
-    console.log(`[Chat] Message in room ${sessionId}`);
   });
 
   socket.on('end-call', (data) => {
@@ -128,12 +122,9 @@ io.on('connection', (socket) => {
       from: socket.id,
       reason: data.reason || 'User ended the call',
     });
-    console.log(`[Call] Ended in room ${sessionId}`);
   });
 
   socket.on('disconnect', () => {
-    console.log(`[Socket] User disconnected: ${socket.id}`);
-
     for (const [sessionId, room] of rooms.entries()) {
       if (room.participants.has(socket.id)) {
         const participant = room.participants.get(socket.id);
@@ -148,7 +139,6 @@ io.on('connection', (socket) => {
           setTimeout(() => {
             if (rooms.get(sessionId)?.participants.size === 0) {
               rooms.delete(sessionId);
-              console.log(`[Room] Cleaned up empty room: ${sessionId}`);
             }
           }, 5 * 60 * 1000);
         }
@@ -159,6 +149,5 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || process.env.SIGNALING_SERVER_PORT || 4000;
 server.listen(PORT, () => {
-  console.log(`🚀 Signaling server running on port ${PORT}`);
-  console.log(`📡 CORS enabled for: ${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}`);
+  console.log(`Signaling server running on port ${PORT}`);
 });

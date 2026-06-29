@@ -7,23 +7,29 @@ import { successResponse, errorResponse } from '@/lib/apiResponse';
 
 
 export async function POST(request: NextRequest) {
-  try {
+  try {
+
     const refreshToken = request.cookies.get('refreshToken')?.value;
     if (!refreshToken) {
       return errorResponse('Refresh token not found', 401);
-    }
+    }
+
     const payload = verifyRefreshToken(refreshToken);
     if (!payload) {
       return errorResponse('Invalid refresh token', 401);
-    }
-    await connectToDatabase();
+    }
+
+    await connectToDatabase();
+
     const user = await User.findById(payload.userId);
     if (!user) {
       return errorResponse('User not found', 401);
-    }
+    }
+
     if (user.isBanned) {
       return errorResponse('Your account has been banned', 403);
-    }
+    }
+
     let isValidRefreshToken = false;
     for (const hashedToken of user.refreshTokens) {
       if (await bcrypt.compare(refreshToken, hashedToken)) {
@@ -32,11 +38,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (!isValidRefreshToken) {
+    if (!isValidRefreshToken) {
+
       user.refreshTokens = [];
       await user.save();
       return errorResponse('Invalid refresh token', 401);
-    }
+    }
+
     const newPayload = {
       userId: user._id.toString(),
       email: user.email,
@@ -48,12 +56,12 @@ export async function POST(request: NextRequest) {
     return successResponse({
       accessToken,
       user: {
-        id: user._id,
+        _id: user._id.toString(),
         fullName: user.fullName,
         email: user.email,
         role: user.role,
         profilePicture: user.profilePicture,
-        verificationStatus: user.verificationStatus,
+        isEmailVerified: user.isEmailVerified,
       },
     });
   } catch (error) {
